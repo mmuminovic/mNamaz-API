@@ -19,7 +19,7 @@ const options: swaggerJsdoc.Options = {
         
         ## Usage
         - Use the \`lang\` query parameter to specify language (en, bs, tr, al, de, es, fr, id, ru, ur)
-        - Use the \`school\` query parameter for school-specific content (hanafi, shafi)
+        - School of thought is automatically determined based on language (Indonesian defaults to Shafi, others to Hanafi)
         - All responses follow a consistent JSON format with success/error indicators
       `,
       contact: {
@@ -311,8 +311,9 @@ const options: swaggerJsdoc.Options = {
         SchoolParam: {
           name: 'school',
           in: 'query',
-          description: 'School of thought',
+          description: 'School of thought (DEPRECATED: School is now automatically determined based on language)',
           required: false,
+          deprecated: true,
           schema: {
             type: 'string',
             enum: ['hanafi', 'shafi'],

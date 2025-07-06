@@ -6,17 +6,18 @@ import { AppError } from '../middleware/errorHandler';
 import path from 'path';
 import fs from 'fs';
 import { config } from '../config/env';
+import { getSchoolByLanguage } from '../utils/schoolSelector';
 
 /**
  * @swagger
  * /audio:
  *   get:
  *     summary: Get all audio resources
- *     description: Retrieve list of available audio files with metadata and URLs
+ *     description: Retrieve list of available audio files with metadata and URLs. School is automatically determined based on language.
  *     tags: [Audio]
  *     parameters:
  *       - $ref: '#/components/parameters/CategoryParam'
- *       - $ref: '#/components/parameters/SchoolParam'
+ *       - $ref: '#/components/parameters/LanguageParam'
  *     responses:
  *       200:
  *         description: List of audio resources
@@ -35,7 +36,8 @@ import { config } from '../config/env';
 
 export const getAudioList = asyncHandler(async (req: Request, res: Response) => {
   const category = req.query.category as string;
-  const school = req.query.school as string;
+  const language = req.language || 'en';
+  const school = getSchoolByLanguage(language);
   
   const audioResources = await dataService.getAudioResources();
   
@@ -45,9 +47,8 @@ export const getAudioList = asyncHandler(async (req: Request, res: Response) => 
     filtered = filtered.filter(audio => audio.category === category);
   }
   
-  if (school) {
-    filtered = filtered.filter(audio => !audio.school || audio.school === school);
-  }
+  // Filter by school determined by language
+  filtered = filtered.filter(audio => !audio.school || audio.school === school);
   
   const audioData = filtered.map(audio => ({
     id: audio.id,
@@ -57,9 +58,38 @@ export const getAudioList = asyncHandler(async (req: Request, res: Response) => 
     url: `${config.media.baseUrl}/audio/${audio.path}`,
   }));
   
-  sendSuccess(res, audioData);
+  sendSuccess(res, audioData, 200, { language, school });
 });
 
+/**
+ * @swagger
+ * /audio/{audioId}:
+ *   get:
+ *     summary: Get audio resource by ID
+ *     description: Retrieve a specific audio resource by its ID
+ *     tags: [Audio]
+ *     parameters:
+ *       - name: audioId
+ *         in: path
+ *         required: true
+ *         description: Audio resource ID
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Audio resource details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/AudioResource'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundResponse'
+ */
 export const getAudioById = asyncHandler(async (req: Request, res: Response) => {
   const { audioId } = req.params;
   
@@ -81,6 +111,35 @@ export const getAudioById = asyncHandler(async (req: Request, res: Response) => 
   sendSuccess(res, audioData);
 });
 
+/**
+ * @swagger
+ * /audio/school/{school}:
+ *   get:
+ *     summary: Get audio resources by school
+ *     description: Retrieve audio resources specific to a school of thought. This endpoint is for explicit school selection.
+ *     tags: [Audio]
+ *     parameters:
+ *       - name: school
+ *         in: path
+ *         required: true
+ *         description: School of thought
+ *         schema:
+ *           type: string
+ *           enum: [hanafi, shafi]
+ *     responses:
+ *       200:
+ *         description: School-specific audio data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Invalid school parameter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ */
 export const getAudioBySchool = asyncHandler(async (req: Request, res: Response) => {
   const { school } = req.params;
   

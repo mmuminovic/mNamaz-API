@@ -36,9 +36,35 @@ export const getAblutionSteps = asyncHandler(async (req: Request, res: Response)
   const language = req.language || 'en';
   const steps = await dataService.getAbdestSteps();
   
-  const localizedSteps = await localizationService.localizeContent(steps, language);
+  // Process each step to populate text values directly
+  const processedSteps = await Promise.all(steps.map(async (step) => {
+    const processedStep: any = {
+      id: step.id,
+      image: step.image,
+    };
+    
+    // Process data array to populate text instead of localeKey
+    if (step.data && Array.isArray(step.data)) {
+      processedStep.data = await Promise.all(step.data.map(async (item) => {
+        const processedItem: any = {
+          type: item.type
+        };
+        
+        // Get translated text for localeKey
+        if (item.localeKey) {
+          processedItem.text = await localizationService.getTranslation(item.localeKey, language);
+        } else {
+          processedItem.text = item.text || '';
+        }
+        
+        return processedItem;
+      }));
+    }
+    
+    return processedStep;
+  }));
   
-  sendSuccess(res, localizedSteps, 200, { language });
+  sendSuccess(res, processedSteps, 200, { language });
 });
 
 /**
@@ -84,7 +110,29 @@ export const getAblutionStep = asyncHandler(async (req: Request, res: Response) 
     throw new AppError('Ablution step not found', 404, 'STEP_NOT_FOUND');
   }
   
-  const localizedStep = await localizationService.localizeContent(step, language);
+  // Process the step to populate text values directly
+  const processedStep: any = {
+    id: step.id,
+    image: step.image,
+  };
   
-  sendSuccess(res, localizedStep, 200, { language });
+  // Process data array to populate text instead of localeKey
+  if (step.data && Array.isArray(step.data)) {
+    processedStep.data = await Promise.all(step.data.map(async (item) => {
+      const processedItem: any = {
+        type: item.type
+      };
+      
+      // Get translated text for localeKey
+      if (item.localeKey) {
+        processedItem.text = await localizationService.getTranslation(item.localeKey, language);
+      } else {
+        processedItem.text = item.text || '';
+      }
+      
+      return processedItem;
+    }));
+  }
+  
+  sendSuccess(res, processedStep, 200, { language });
 });

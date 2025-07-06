@@ -26,10 +26,18 @@ const envSchema = z.object({
 
 const env = envSchema.parse(process.env);
 
+// Helper function to determine base URL
+const getBaseUrl = (): string => {
+  const protocol = env.NODE_ENV === 'production' && !env.HOST.includes('localhost') ? 'https' : 'http';
+  const host = env.HOST === '0.0.0.0' ? 'localhost' : env.HOST;
+  return `${protocol}://${host}:${env.PORT}`;
+};
+
 export const config = {
   env: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
+  baseUrl: getBaseUrl(),
   api: {
     version: env.API_VERSION,
     prefix: env.API_PREFIX,
@@ -65,5 +73,6 @@ export const config = {
     data: path.resolve(__dirname, '../../data'),
     locales: path.resolve(__dirname, '../../locales'),
     audio: path.resolve(__dirname, '../../data/namaz/audio'),
+    assets: path.resolve(__dirname, '../../assets'),
   },
 };

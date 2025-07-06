@@ -5,19 +5,71 @@ import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
 
+// Helper function to process special prayer content and populate text values
+async function processSpecialPrayerContent(content: any, language: string): Promise<any> {
+  if (!content) return content;
+
+  if (Array.isArray(content)) {
+    return Promise.all(content.map(item => processSpecialPrayerContent(item, language)));
+  }
+
+  if (typeof content === 'object' && content !== null) {
+    const processed: any = {};
+
+    for (const [key, value] of Object.entries(content)) {
+      if (key === 'localeKey' && typeof value === 'string') {
+        processed.text = await localizationService.getTranslation(value, language);
+      } else if (key === 'nameLocaleKey' && typeof value === 'string') {
+        processed.name = await localizationService.getTranslation(value, language);
+      } else if (key === 'descriptionLocaleKey' && typeof value === 'string') {
+        processed.description = await localizationService.getTranslation(value, language);
+      } else if (key === 'titleLocaleKey' && typeof value === 'string') {
+        processed.title = await localizationService.getTranslation(value, language);
+      } else {
+        processed[key] = await processSpecialPrayerContent(value, language);
+      }
+    }
+
+    return processed;
+  }
+
+  return content;
+}
+
 export const getSpecialPrayers = asyncHandler(async (req: Request, res: Response) => {
   const language = req.language || 'en';
   
   const specialPrayers = [
-    { id: 'bajram', name: 'Eid Prayer', type: 'bajram' },
-    { id: 'dzenaza', name: 'Funeral Prayer', type: 'dzenaza' },
-    { id: 'istihara', name: 'Istikharah Prayer', type: 'istihara' },
-    { id: 'duha', name: 'Duha Prayer', type: 'duha' },
+    { 
+      id: 'bajram', 
+      nameLocaleKey: 'special-prayer-bajram-name',
+      name: 'Eid Prayer', 
+      type: 'bajram' 
+    },
+    { 
+      id: 'dzenaza', 
+      nameLocaleKey: 'special-prayer-dzenaza-name',
+      name: 'Funeral Prayer', 
+      type: 'dzenaza' 
+    },
+    { 
+      id: 'istihara', 
+      nameLocaleKey: 'special-prayer-istihara-name',
+      name: 'Istikharah Prayer', 
+      type: 'istihara' 
+    },
+    { 
+      id: 'duha', 
+      nameLocaleKey: 'special-prayer-duha-name',
+      name: 'Duha Prayer', 
+      type: 'duha' 
+    },
   ];
   
-  const localizedPrayers = await localizationService.localizeContent(specialPrayers, language);
+  // Process each special prayer to populate text values directly
+  const processedPrayers = await processSpecialPrayerContent(specialPrayers, language);
   
-  sendSuccess(res, localizedPrayers, 200, { language });
+  sendSuccess(res, processedPrayers, 200, { language });
 });
 
 export const getSpecialPrayerByType = asyncHandler(async (req: Request, res: Response) => {
@@ -31,11 +83,13 @@ export const getSpecialPrayerByType = asyncHandler(async (req: Request, res: Res
   }
   
   const prayerData = nonMandatoryData[type];
-  const localizedPrayer = await localizationService.localizeContent(prayerData, language);
+  
+  // Process the prayer data to populate text values directly
+  const processedPrayer = await processSpecialPrayerContent(prayerData, language);
   
   sendSuccess(res, {
     type,
-    data: localizedPrayer,
+    data: processedPrayer,
   }, 200, { language });
 });
 
@@ -50,7 +104,9 @@ export const getSpecialPrayerSteps = asyncHandler(async (req: Request, res: Resp
   }
   
   const steps = nonMandatoryData[type].steps || nonMandatoryData[type];
-  const localizedSteps = await localizationService.localizeContent(steps, language);
   
-  sendSuccess(res, localizedSteps, 200, { language });
+  // Process the steps to populate text values directly
+  const processedSteps = await processSpecialPrayerContent(steps, language);
+  
+  sendSuccess(res, processedSteps, 200, { language });
 });

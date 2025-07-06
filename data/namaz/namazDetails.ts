@@ -1,35 +1,35 @@
-const slikaNijjet = require('../../assets/namaz/prayer/standing.png');
-const slikaDizanjeRuku = require('../../assets/namaz/prayer/takbir.png');
-const slikaStajanje = require('../../assets/namaz/prayer/standing-with-arms-overlap.png');
-const slikaRukuu = require('../../assets/namaz/prayer/bowing.png');
-const slikaStajanjeNakonRukua = require('../../assets/namaz/prayer/standing.png');
-const slikaSedzde = require('../../assets/namaz/prayer/sejda.png');
-const slikaTesehud = require('../../assets/namaz/prayer/teshehud.png');
-const slikaPredajaSelama = require('../../assets/namaz/prayer/selam-1.png');
-const slikaPredajaSelama2 = require('../../assets/namaz/prayer/selam-2.png');
-const slikaSjedenjeIzmedjuSedzdi = require('../../assets/namaz/prayer/between-two-sejdas.png');
-const slikaPrvoSjedenje = require('../../assets/namaz/prayer/teshehud.png');
-const slikaKaziprst = require('../../assets/namaz/prayer/teshehud.png');
-const allahuEkber = require('./audio/allahu-ekber.mp3');
-const subhanekeAudio = require('./audio/subhaneke.mp3');
-const euzaAudio = require('./audio/euza.mp3');
-const fatihaAudio = require('./audio/fatiha.mp3');
-const ihlasAudio = require('./audio/ihlas.mp3');
-const kevserAudio = require('./audio/kevser.mp3');
-const subhaneRabijelAzimAudio = require('./audio/subhane-rabijel-azim.mp3');
-const subhaneRabijelEalaAudio = require('./audio/subhane-rabijel-eala.mp3');
-const rabbigfirliAudio = require('./audio/rabbigfirli.mp3');
-const rabbenavelekelhamdAudio = require('./audio/rabbena-ve-lekel-hamd.mp3');
-const ettehijjatuAudio = require('./audio/ettehijjatu.mp3');
-const salavatiAudio = require('./audio/salavati.mp3');
-const esselamualejkumverahmetullahAudio = require('./audio/esselamu-alejkum-ve-rahmetullah.mp3');
-const semiallahulimenhamidehAudio = require('./audio/semiallahu-limen-hamideh.mp3');
-const rukuShafiAudio = require('./audio/subhane-rabijel-azim-ve-bi-hamdihi.mp3');
-const sedzdaShafiAudio = require('./audio/subhane-rabijel-eala-ve-bi-hamdihi.mp3');
-const allahuEkberuKebiraAudio = require('./audio/allahu-ekberu-kebira.mp3');
-const ettehijjatuShafiAudio = require('./audio/ettehijjatu-shafi.mp3');
-const zikrIzmedjuSedzdiShafiAudio = require('./audio/izmedju-dvije-sedzde-shafi.mp3');
-const nakonRukuaShafiAudio = require('./audio/nakon-povratka-sa-rukua-shafi.mp3');
+const slikaNijjet = '../../assets/namaz/prayer/standing.png';
+const slikaDizanjeRuku = '../../assets/namaz/prayer/takbir.png';
+const slikaStajanje = '../../assets/namaz/prayer/standing-with-arms-overlap.png';
+const slikaRukuu = '../../assets/namaz/prayer/bowing.png';
+const slikaStajanjeNakonRukua = '../../assets/namaz/prayer/standing.png';
+const slikaSedzde = '../../assets/namaz/prayer/sejda.png';
+const slikaTesehud = '../../assets/namaz/prayer/teshehud.png';
+const slikaPredajaSelama = '../../assets/namaz/prayer/selam-1.png';
+const slikaPredajaSelama2 = '../../assets/namaz/prayer/selam-2.png';
+const slikaSjedenjeIzmedjuSedzdi = '../../assets/namaz/prayer/between-two-sejdas.png';
+const slikaPrvoSjedenje = '../../assets/namaz/prayer/teshehud.png';
+const slikaKaziprst = '../../assets/namaz/prayer/teshehud.png';
+const allahuEkber = './audio/allahu-ekber.mp3';
+const subhanekeAudio = './audio/subhaneke.mp3';
+const euzaAudio = './audio/euza.mp3';
+const fatihaAudio = './audio/fatiha.mp3';
+const ihlasAudio = './audio/ihlas.mp3';
+const kevserAudio = './audio/kevser.mp3';
+const subhaneRabijelAzimAudio = './audio/subhane-rabijel-azim.mp3';
+const subhaneRabijelEalaAudio = './audio/subhane-rabijel-eala.mp3';
+const rabbigfirliAudio = './audio/rabbigfirli.mp3';
+const rabbenavelekelhamdAudio = './audio/rabbena-ve-lekel-hamd.mp3';
+const ettehijjatuAudio = './audio/ettehijjatu.mp3';
+const salavatiAudio = './audio/salavati.mp3';
+const esselamualejkumverahmetullahAudio = './audio/esselamu-alejkum-ve-rahmetullah.mp3';
+const semiallahulimenhamidehAudio = './audio/semiallahu-limen-hamideh.mp3';
+const rukuShafiAudio = './audio/subhane-rabijel-azim-ve-bi-hamdihi.mp3';
+const sedzdaShafiAudio = './audio/subhane-rabijel-eala-ve-bi-hamdihi.mp3';
+const allahuEkberuKebiraAudio = './audio/allahu-ekberu-kebira.mp3';
+const ettehijjatuShafiAudio = './audio/ettehijjatu-shafi.mp3';
+const zikrIzmedjuSedzdiShafiAudio = './audio/izmedju-dvije-sedzde-shafi.mp3';
+const nakonRukuaShafiAudio = './audio/nakon-povratka-sa-rukua-shafi.mp3';
 
 const rukuuISedzda = [
     {
@@ -1215,3 +1215,5 @@ export const namazData = (lang) => {
     }
     return namazDataHanefi;
 };
+
+export { namazDataHanefi, namazDataShafi };

@@ -8,6 +8,7 @@ import {
   Dhikr,
   AudioResource 
 } from '../types/namaz.types';
+import { createMockPrayerData } from '../data/prayerMappings';
 
 class DataService {
   private cache: Map<string, any> = new Map();
@@ -53,19 +54,34 @@ class DataService {
 
   private parseDataFile(content: string): any {
     try {
-      // Remove require() statements and replace with image filenames
-      let cleanContent = content.replace(/require\(['"].*?([^/\\]+\.(png|jpg|jpeg|gif))['"]?\)/g, '"$1"');
+      // Replace require() statements with placeholder strings
+      content = content.replace(/require\(['"].*?([^/\\]+\.(png|jpg|jpeg|gif|mp3))['"]?\)/g, '"$1"');
       
-      // Remove export statement to make it valid JSON-like
-      cleanContent = cleanContent.replace(/^export\s+(const|let|var)\s+\w+\s*:\s*[^=]*=\s*/, '');
-      cleanContent = cleanContent.replace(/;?\s*$/, '');
+      // Extract individual exports
+      const namazDataHanefiMatch = content.match(/const namazDataHanefi\s*=\s*(\[[\s\S]*?\]);/);
+      const namazDataShafiMatch = content.match(/const namazDataShafi\s*=\s*(\[[\s\S]*?\]);/);
       
-      // Parse as JavaScript object
-      const data = eval(`(${cleanContent})`);
-      return data;
+      // Parse the extracted data
+      if (namazDataHanefiMatch && namazDataShafiMatch) {
+        const hanefiData = eval(`(${namazDataHanefiMatch[1]})`);
+        const shafiData = eval(`(${namazDataShafiMatch[1]})`);
+        
+        return {
+          namazDataHanefi: hanefiData,
+          namazDataShafi: shafiData
+        };
+      }
+      
+      // If specific format not found, try generic parsing
+      const exportMatch = content.match(/export\s*(?:const|let|var)?\s*(?:{[^}]+}|\w+)\s*=\s*([\s\S]+)$/);
+      if (exportMatch) {
+        return eval(`(${exportMatch[1]})`);
+      }
+      
+      return {};
     } catch (error) {
       logger.error('Failed to parse data file', error);
-      return [];
+      return {};
     }
   }
 
@@ -110,11 +126,94 @@ class DataService {
 
   async getNamezDetails(): Promise<{ namazDataHanefi: any[], namazDataShafi: any[] }> {
     const filePath = path.join(config.paths.data, 'namaz/namazDetails.ts');
-    const module = await this.loadModule<any>(filePath);
+    
+    try {
+      // Try to load the actual data from the file
+      const module = await this.loadModule<any>(filePath);
+      
+      if (module.namazDataHanefi && module.namazDataShafi) {
+        // If we have the actual data, try to map it to prayer types
+        const hanefiWithTypes = this.mapRakatsToPrayerTypes(module.namazDataHanefi);
+        const shafiWithTypes = this.mapRakatsToPrayerTypes(module.namazDataShafi);
+        
+        return {
+          namazDataHanefi: hanefiWithTypes,
+          namazDataShafi: shafiWithTypes
+        };
+      }
+    } catch (error) {
+      logger.warn('Could not load namaz details from file, using direct import', error);
+    }
+    
+    // Try direct import of the data
+    try {
+      const { namazDataHanefi, namazDataShafi } = await import(filePath);
+      
+      if (namazDataHanefi && namazDataShafi) {
+        const hanefiWithTypes = this.mapRakatsToPrayerTypes(namazDataHanefi);
+        const shafiWithTypes = this.mapRakatsToPrayerTypes(namazDataShafi);
+        
+        return {
+          namazDataHanefi: hanefiWithTypes,
+          namazDataShafi: shafiWithTypes
+        };
+      }
+    } catch (error) {
+      logger.warn('Could not import namaz details, using fallback data', error);
+    }
+    
+    // Fallback to mock data with correct structure
+    const mockData = createMockPrayerData();
+    
     return {
-      namazDataHanefi: module.namazDataHanefi || [],
-      namazDataShafi: module.namazDataShafi || []
+      namazDataHanefi: mockData,
+      namazDataShafi: mockData
     };
+  }
+
+  private mapRakatsToPrayerTypes(rakatData: any[]): any[] {
+    const mappedData: any[] = [];
+    
+    rakatData.forEach((entry: any) => {
+      if (entry.num === 2) {
+        // 2 rakats = Fajr
+        mappedData.push({
+          type: 'fajr',
+          rakats: 2,
+          name: 'Fajr',
+          localName: 'sabah',
+          steps: Array.isArray(entry.steps) ? entry.steps : []
+        });
+      } else if (entry.num === 3) {
+        // 3 rakats = Maghrib
+        mappedData.push({
+          type: 'maghrib',
+          rakats: 3,
+          name: 'Maghrib',
+          localName: 'aksam',
+          steps: Array.isArray(entry.steps) ? entry.steps : []
+        });
+      } else if (entry.num === 4) {
+        // 4 rakats = Dhuhr, Asr, Isha
+        ['dhuhr', 'asr', 'isha'].forEach(prayerType => {
+          const names = {
+            dhuhr: { name: 'Dhuhr', localName: 'podne' },
+            asr: { name: 'Asr', localName: 'ikindija' },
+            isha: { name: 'Isha', localName: 'jacija' }
+          };
+          
+          mappedData.push({
+            type: prayerType,
+            rakats: 4,
+            name: names[prayerType as keyof typeof names].name,
+            localName: names[prayerType as keyof typeof names].localName,
+            steps: Array.isArray(entry.steps) ? entry.steps : []
+          });
+        });
+      }
+    });
+    
+    return mappedData;
   }
 
   async getLessons(): Promise<Lesson[]> {
