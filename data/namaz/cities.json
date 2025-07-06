@@ -1,0 +1,355 @@
+[{
+    "value": 0,
+    "label": "Banovići"
+}, {
+    "value": 1,
+    "label": "Banja Luka"
+}, {
+    "value": 2,
+    "label": "Bihać"
+}, {
+    "value": 3,
+    "label": "Bijeljina"
+}, {
+    "value": 4,
+    "label": "Bileća"
+}, {
+    "value": 5,
+    "label": "Bosanski Brod"
+}, {
+    "value": 6,
+    "label": "Bosanska Dubica"
+}, {
+    "value": 7,
+    "label": "Bosanska Gradiška"
+}, {
+    "value": 8,
+    "label": "Bosansko Grahovo"
+}, {
+    "value": 9,
+    "label": "Bosanska Krupa"
+}, {
+    "value": 10,
+    "label": "Bosanski Novi"
+}, {
+    "value": 11,
+    "label": "Bosanski Petrovac"
+}, {
+    "value": 12,
+    "label": "Bosanski Šamac"
+}, {
+    "value": 13,
+    "label": "Bratunac"
+}, {
+    "value": 14,
+    "label": "Brčko"
+}, {
+    "value": 15,
+    "label": "Breza"
+}, {
+    "value": 16,
+    "label": "Bugojno"
+}, {
+    "value": 17,
+    "label": "Busovača"
+}, {
+    "value": 18,
+    "label": "Bužim"
+}, {
+    "value": 19,
+    "label": "Cazin"
+}, {
+    "value": 20,
+    "label": "Čajniče"
+}, {
+    "value": 21,
+    "label": "Čapljina"
+}, {
+    "value": 22,
+    "label": "Čelić"
+}, {
+    "value": 23,
+    "label": "Čelinac"
+}, {
+    "value": 24,
+    "label": "Čitluk"
+}, {
+    "value": 25,
+    "label": "Derventa"
+}, {
+    "value": 26,
+    "label": "Doboj"
+}, {
+    "value": 27,
+    "label": "Donji Vakuf"
+}, {
+    "value": 28,
+    "label": "Drvar"
+}, {
+    "value": 29,
+    "label": "Foča"
+}, {
+    "value": 30,
+    "label": "Fojnica"
+}, {
+    "value": 31,
+    "label": "Gacko"
+}, {
+    "value": 32,
+    "label": "Glamoč"
+}, {
+    "value": 33,
+    "label": "Goražde"
+}, {
+    "value": 34,
+    "label": "Gornji Vakuf"
+}, {
+    "value": 35,
+    "label": "Gračanica"
+}, {
+    "value": 36,
+    "label": "Gradačac"
+}, {
+    "value": 37,
+    "label": "Grude"
+}, {
+    "value": 38,
+    "label": "Hadžići"
+}, {
+    "value": 39,
+    "label": "Han-Pijesak"
+}, {
+    "value": 40,
+    "label": "Hlivno"
+}, {
+    "value": 41,
+    "label": "Ilijaš"
+}, {
+    "value": 42,
+    "label": "Jablanica"
+}, {
+    "value": 43,
+    "label": "Jajce"
+}, {
+    "value": 44,
+    "label": "Kakanj"
+}, {
+    "value": 45,
+    "label": "Kalesija"
+}, {
+    "value": 46,
+    "label": "Kalinovik"
+}, {
+    "value": 47,
+    "label": "Kiseljak"
+}, {
+    "value": 48,
+    "label": "Kladanj"
+}, {
+    "value": 49,
+    "label": "Ključ"
+}, {
+    "value": 50,
+    "label": "Konjic"
+}, {
+    "value": 51,
+    "label": "Kotor-Varoš"
+}, {
+    "value": 52,
+    "label": "Kreševo"
+}, {
+    "value": 53,
+    "label": "Kupres"
+}, {
+    "value": 54,
+    "label": "Laktaši"
+}, {
+    "value": 55,
+    "label": "Lopare"
+}, {
+    "value": 56,
+    "label": "Lukavac"
+}, {
+    "value": 57,
+    "label": "Ljubinje"
+}, {
+    "value": 58,
+    "label": "Ljubuški"
+}, {
+    "value": 59,
+    "label": "Maglaj"
+}, {
+    "value": 60,
+    "label": "Modriča"
+}, {
+    "value": 61,
+    "label": "Mostar"
+}, {
+    "value": 62,
+    "label": "Mrkonjić-Grad"
+}, {
+    "value": 63,
+    "label": "Neum"
+}, {
+    "value": 64,
+    "label": "Nevesinje"
+}, {
+    "value": 65,
+    "label": "Novi Travnik"
+}, {
+    "value": 66,
+    "label": "Odžak"
+}, {
+    "value": 67,
+    "label": "Olovo"
+}, {
+    "value": 68,
+    "label": "Orašje"
+}, {
+    "value": 69,
+    "label": "Pale"
+}, {
+    "value": 70,
+    "label": "Posušje"
+}, {
+    "value": 71,
+    "label": "Prijedor"
+}, {
+    "value": 72,
+    "label": "Prnjavor"
+}, {
+    "value": 73,
+    "label": "Prozor"
+}, {
+    "value": 74,
+    "label": "Rogatica"
+}, {
+    "value": 75,
+    "label": "Rudo"
+}, {
+    "value": 76,
+    "label": "Sanski Most"
+}, {
+    "value": 77,
+    "label": "Sarajevo"
+}, {
+    "value": 78,
+    "label": "Skender-Vakuf"
+}, {
+    "value": 79,
+    "label": "Sokolac"
+}, {
+    "value": 80,
+    "label": "Srbac"
+}, {
+    "value": 81,
+    "label": "Srebrenica"
+}, {
+    "value": 82,
+    "label": "Srebrenik"
+}, {
+    "value": 83,
+    "label": "Stolac"
+}, {
+    "value": 84,
+    "label": "Šekovići"
+}, {
+    "value": 85,
+    "label": "Šipovo"
+}, {
+    "value": 86,
+    "label": "Široki Brijeg"
+}, {
+    "value": 87,
+    "label": "Teslić"
+}, {
+    "value": 88,
+    "label": "Tešanj"
+}, {
+    "value": 89,
+    "label": "Tomislav-Grad"
+}, {
+    "value": 90,
+    "label": "Travnik"
+}, {
+    "value": 91,
+    "label": "Trebinje"
+}, {
+    "value": 92,
+    "label": "Trnovo"
+}, {
+    "value": 93,
+    "label": "Tuzla"
+}, {
+    "value": 94,
+    "label": "Ugljevik"
+}, {
+    "value": 95,
+    "label": "Vareš"
+}, {
+    "value": 96,
+    "label": "Velika Kladuša"
+}, {
+    "value": 97,
+    "label": "Visoko"
+}, {
+    "value": 98,
+    "label": "Višegrad"
+}, {
+    "value": 99,
+    "label": "Vitez"
+}, {
+    "value": 100,
+    "label": "Vlasenica"
+}, {
+    "value": 101,
+    "label": "Zavidovići"
+}, {
+    "value": 102,
+    "label": "Zenica"
+}, {
+    "value": 103,
+    "label": "Zvornik"
+}, {
+    "value": 104,
+    "label": "Žepa"
+}, {
+    "value": 105,
+    "label": "Žepče"
+}, {
+    "value": 106,
+    "label": "Živinice"
+}, {
+    "value": 107,
+    "label": "Bijelo Polje"
+}, {
+    "value": 108,
+    "label": "Gusinje"
+}, {
+    "value": 109,
+    "label": "Nova Varoš"
+}, {
+    "value": 110,
+    "label": "Novi Pazar"
+}, {
+    "value": 111,
+    "label": "Plav"
+}, {
+    "value": 112,
+    "label": "Pljevlja"
+}, {
+    "value": 113,
+    "label": "Priboj"
+}, {
+    "value": 114,
+    "label": "Prijepolje"
+}, {
+    "value": 115,
+    "label": "Rožaje"
+}, {
+    "value": 116,
+    "label": "Sjenica"
+}, {
+    "value": 117,
+    "label": "Tutin"
+}]

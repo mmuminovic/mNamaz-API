@@ -1,0 +1,45 @@
+[
+    {
+        "id": 1,
+        "name": "sabah",
+        "rekati": [
+            { "num": 2, "fard": false },
+            { "num": 2, "fard": true }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "podne",
+        "rekati": [
+            { "num": 4, "fard": false },
+            { "num": 4, "fard": true },
+            { "num": 2, "fard": false }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "ikindija",
+        "rekati": [
+            { "num": 4, "fard": false },
+            { "num": 4, "fard": true }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "aksam",
+        "rekati": [
+            { "num": 3, "fard": true },
+            { "num": 2, "fard": false }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "jacija",
+        "rekati": [
+            { "num": 4, "fard": false },
+            { "num": 4, "fard": true },
+            { "num": 2, "fard": false },
+            { "num": 3, "fard": false }
+        ]
+    }
+]

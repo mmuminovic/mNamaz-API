@@ -1,0 +1,32 @@
+[
+    {
+        "id": 0,
+        "localeKey": "sabah",
+        "name": "Fajr"
+    },
+    {
+        "id": 1,
+        "localeKey": "sunrise",
+        "name": "Sunrise"
+    },
+    {
+        "id": 2,
+        "localeKey": "podne",
+        "name": "Dhuhr"
+    },
+    {
+        "id": 3,
+        "localeKey": "ikindija",
+        "name": "Asr"
+    },
+    {
+        "id": 4,
+        "localeKey": "aksam",
+        "name": "Maghrib"
+    },
+    {
+        "id": 5,
+        "localeKey": "jacija",
+        "name": "Isha"
+    }
+]
