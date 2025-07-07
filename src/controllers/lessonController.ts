@@ -4,6 +4,7 @@ import localizationService from '../services/localizationService';
 import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { processAssetUrls } from '../utils/urlHelper';
 
 // Helper function to process lesson content and populate text values
 async function processLessonContent(lesson: any, language: string): Promise<any> {
@@ -16,12 +17,13 @@ async function processLessonContent(lesson: any, language: string): Promise<any>
   if (lesson.titleLocaleKey) {
     processedLesson.title = await localizationService.getTranslation(lesson.titleLocaleKey, language);
   } else if (lesson.title) {
-    processedLesson.title = lesson.title;
+    // If title is a localeKey, translate it
+    processedLesson.title = await localizationService.getTranslation(lesson.title, language);
   }
 
   // Process sentences array
   if (lesson.sentences && Array.isArray(lesson.sentences)) {
-    processedLesson.sentences = await Promise.all(lesson.sentences.map(async (sentence) => {
+    processedLesson.sentences = await Promise.all(lesson.sentences.map(async (sentence: any) => {
       const processedSentence: any = {
         type: sentence.type
       };
@@ -94,7 +96,10 @@ export const getLessons = asyncHandler(async (req: Request, res: Response) => {
   // Process each lesson to populate text values directly
   const processedLessons = await Promise.all(lessons.map(lesson => processLessonContent(lesson, language)));
   
-  sendSuccess(res, processedLessons, 200, { language });
+  // Process asset URLs
+  const lessonsWithUrls = processAssetUrls(processedLessons);
+  
+  sendSuccess(res, lessonsWithUrls, 200, { language });
 });
 
 export const getLesson = asyncHandler(async (req: Request, res: Response) => {
@@ -111,5 +116,8 @@ export const getLesson = asyncHandler(async (req: Request, res: Response) => {
   // Process the lesson to populate text values directly
   const processedLesson = await processLessonContent(lesson, language);
   
-  sendSuccess(res, processedLesson, 200, { language });
+  // Process asset URLs
+  const lessonWithUrls = processAssetUrls(processedLesson);
+  
+  sendSuccess(res, lessonWithUrls, 200, { language });
 });

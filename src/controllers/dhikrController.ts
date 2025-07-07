@@ -4,6 +4,7 @@ import localizationService from '../services/localizationService';
 import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { processAssetUrls } from '../utils/urlHelper';
 
 // Helper function to process dhikr data and populate text values
 async function processDhikrContent(content: any, language: string): Promise<any> {
@@ -35,8 +36,9 @@ export const getDhikrList = asyncHandler(async (req: Request, res: Response) => 
   const dhikrData = await dataService.getZikrData();
   
   const processedDhikr = await processDhikrContent(dhikrData, language);
+  const dhikrWithUrls = processAssetUrls(processedDhikr);
   
-  sendSuccess(res, processedDhikr, 200, { language });
+  sendSuccess(res, dhikrWithUrls, 200, { language });
 });
 
 export const getDhikrAfterPrayer = asyncHandler(async (req: Request, res: Response) => {
@@ -45,8 +47,9 @@ export const getDhikrAfterPrayer = asyncHandler(async (req: Request, res: Respon
   
   const afterPrayerDhikr = dhikrData.filter((d: any) => d.afterPrayer === true);
   const processedDhikr = await processDhikrContent(afterPrayerDhikr, language);
+  const dhikrWithUrls = processAssetUrls(processedDhikr);
   
-  sendSuccess(res, processedDhikr, 200, { language });
+  sendSuccess(res, dhikrWithUrls, 200, { language });
 });
 
 export const getDhikrById = asyncHandler(async (req: Request, res: Response) => {
@@ -61,6 +64,7 @@ export const getDhikrById = asyncHandler(async (req: Request, res: Response) => 
   }
   
   const processedDhikr = await processDhikrContent(dhikr, language);
+  const dhikrWithUrls = processAssetUrls(processedDhikr);
   
-  sendSuccess(res, processedDhikr, 200, { language });
+  sendSuccess(res, dhikrWithUrls, 200, { language });
 });

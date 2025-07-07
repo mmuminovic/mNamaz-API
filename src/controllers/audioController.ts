@@ -158,6 +158,7 @@ export const streamAudio = asyncHandler(async (req: Request, res: Response) => {
   const requestedPath = req.path.replace('/audio/', '');
   const filePath = path.join(config.paths.audio, requestedPath);
   
+  
   if (!fs.existsSync(filePath)) {
     throw new AppError('Audio file not found', 404, 'FILE_NOT_FOUND');
   }

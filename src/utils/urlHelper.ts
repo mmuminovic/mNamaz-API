@@ -16,11 +16,17 @@ export function createAssetUrl(relativePath: string): string {
   // Remove leading dots and slashes
   const cleanPath = relativePath.replace(/^\.+\/+/, '');
 
-  // Create full URL based on the asset type
+  // Create full URL based on the asset type - all through unified /media endpoint
   if (cleanPath.includes('audio/')) {
     return `${config.baseUrl}${config.api.prefix}/${config.api.version}/media/audio/${cleanPath.split('audio/')[1]}`;
   } else if (cleanPath.includes('assets/')) {
     return `${config.baseUrl}${config.api.prefix}/${config.api.version}/media/images/${cleanPath.split('assets/')[1]}`;
+  } else if (cleanPath.endsWith('.mp3')) {
+    // For audio files without path (like dhikr audio files) - use unified media endpoint
+    return `${config.baseUrl}${config.api.prefix}/${config.api.version}/media/audio/zikr/${cleanPath}`;
+  } else if (cleanPath.endsWith('.png') || cleanPath.endsWith('.jpg') || cleanPath.endsWith('.jpeg') || cleanPath.endsWith('.gif')) {
+    // For image files without path - use unified media endpoint
+    return `${config.baseUrl}${config.api.prefix}/${config.api.version}/media/images/${cleanPath}`;
   } else {
     // Default to treating as media
     return `${config.baseUrl}${config.api.prefix}/${config.api.version}/media/${cleanPath}`;

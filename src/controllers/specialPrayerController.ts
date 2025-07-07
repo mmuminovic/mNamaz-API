@@ -4,6 +4,7 @@ import localizationService from '../services/localizationService';
 import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { processAssetUrls } from '../utils/urlHelper';
 
 // Helper function to process special prayer content and populate text values
 async function processSpecialPrayerContent(content: any, language: string): Promise<any> {
@@ -42,26 +43,22 @@ export const getSpecialPrayers = asyncHandler(async (req: Request, res: Response
   const specialPrayers = [
     { 
       id: 'bajram', 
-      nameLocaleKey: 'special-prayer-bajram-name',
-      name: 'Eid Prayer', 
+      nameLocaleKey: 'bajram_namaz_title',
       type: 'bajram' 
     },
     { 
       id: 'dzenaza', 
-      nameLocaleKey: 'special-prayer-dzenaza-name',
-      name: 'Funeral Prayer', 
+      nameLocaleKey: 'dzenaza_namaz_title',
       type: 'dzenaza' 
     },
     { 
       id: 'istihara', 
-      nameLocaleKey: 'special-prayer-istihara-name',
-      name: 'Istikharah Prayer', 
+      nameLocaleKey: 'istihara_namaz_title',
       type: 'istihara' 
     },
     { 
       id: 'duha', 
-      nameLocaleKey: 'special-prayer-duha-name',
-      name: 'Duha Prayer', 
+      nameLocaleKey: 'duha_namaz_title',
       type: 'duha' 
     },
   ];
@@ -69,44 +66,70 @@ export const getSpecialPrayers = asyncHandler(async (req: Request, res: Response
   // Process each special prayer to populate text values directly
   const processedPrayers = await processSpecialPrayerContent(specialPrayers, language);
   
-  sendSuccess(res, processedPrayers, 200, { language });
+  // Process asset URLs
+  const prayersWithUrls = processAssetUrls(processedPrayers);
+  
+  sendSuccess(res, prayersWithUrls, 200, { language });
 });
 
 export const getSpecialPrayerByType = asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.params;
   const language = req.language || 'en';
   
+  // Load actual data from data service
   const nonMandatoryData = await dataService.getNonMandatoryPrayers();
   
-  if (!nonMandatoryData[type]) {
+  // Check if actual data is available, otherwise throw error
+  if (!nonMandatoryData || !nonMandatoryData[type]) {
     throw new AppError('Special prayer type not found', 404, 'SPECIAL_PRAYER_NOT_FOUND');
   }
   
   const prayerData = nonMandatoryData[type];
-  
-  // Process the prayer data to populate text values directly
   const processedPrayer = await processSpecialPrayerContent(prayerData, language);
   
-  sendSuccess(res, {
+  // Process asset URLs
+  const prayerWithUrls = processAssetUrls({
     type,
     data: processedPrayer,
-  }, 200, { language });
+  });
+  
+  sendSuccess(res, prayerWithUrls, 200, { language });
 });
 
 export const getSpecialPrayerSteps = asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.params;
   const language = req.language || 'en';
   
+  // Load actual data from data service
   const nonMandatoryData = await dataService.getNonMandatoryPrayers();
   
-  if (!nonMandatoryData[type]) {
+  // Check if actual data is available, otherwise throw error
+  if (!nonMandatoryData || !nonMandatoryData[type] || !nonMandatoryData[type].steps) {
     throw new AppError('Special prayer type not found', 404, 'SPECIAL_PRAYER_NOT_FOUND');
   }
   
-  const steps = nonMandatoryData[type].steps || nonMandatoryData[type];
+  const prayerData = nonMandatoryData[type];
+  const steps = prayerData.steps;
+  
+  // Process the prayer metadata (title, description, etc.)
+  const processedPrayerData = await processSpecialPrayerContent(prayerData, language);
   
   // Process the steps to populate text values directly
   const processedSteps = await processSpecialPrayerContent(steps, language);
   
-  sendSuccess(res, processedSteps, 200, { language });
+  // Process asset URLs
+  const stepsWithUrls = processAssetUrls(processedSteps);
+  
+  // Combine prayer metadata with steps
+  const response = {
+    title: processedPrayerData.title,
+    description: processedPrayerData.description,
+    rekati: processedPrayerData.rekati,
+    steps: stepsWithUrls
+  };
+  
+  // Process asset URLs for the entire response
+  const responseWithUrls = processAssetUrls(response);
+  
+  sendSuccess(res, responseWithUrls, 200, { language });
 });

@@ -5,8 +5,7 @@ import { sendSuccess } from "../utils/responseFormatter";
 import { asyncHandler } from "../middleware/errorHandler";
 import { AppError } from "../middleware/errorHandler";
 import { getSchoolByLanguage } from "../utils/schoolSelector";
-import { getPrayerMapping } from "../data/prayerMappings";
-import { namazDataHanefi, namazDataShafi } from "../../data/namaz/namazDetails";
+// import { namazDataHanefi, namazDataShafi } from "../../data/namaz/namazDetails";
 import { processAssetUrls } from "../utils/urlHelper";
 
 // Helper function to recursively process prayer data and populate text values
@@ -114,19 +113,19 @@ export const getPrayers = asyncHandler(async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /prayers/{prayerType}:
+ * /prayers/{rekatNumber}:
  *   get:
- *     summary: Get specific prayer type
- *     description: Retrieve detailed information for a specific prayer type
+ *     summary: Get prayer by rekat number
+ *     description: Retrieve detailed information for a prayer with specific number of rekats
  *     tags: [Prayers]
  *     parameters:
- *       - name: prayerType
+ *       - name: rekatNumber
  *         in: path
  *         required: true
- *         description: Type of prayer (fajr, dhuhr, asr, maghrib, isha)
+ *         description: Number of rekats (2, 3, 4)
  *         schema:
- *           type: string
- *           enum: [fajr, dhuhr, asr, maghrib, isha]
+ *           type: integer
+ *           enum: [2, 3, 4]
  *       - $ref: '#/components/parameters/LanguageParam'
  *     responses:
  *       200:
@@ -138,23 +137,25 @@ export const getPrayers = asyncHandler(async (req: Request, res: Response) => {
  *       404:
  *         $ref: '#/components/responses/NotFoundResponse'
  */
-export const getPrayerByType = asyncHandler(
+export const getPrayerByRekatNumber = asyncHandler(
   async (req: Request, res: Response) => {
-    const { prayerType } = req.params;
+    const { rekatNumber } = req.params;
     const language = req.language || "en";
     const school = getSchoolByLanguage(language);
 
-    // Get prayer mapping to determine rakats
-    const prayerConfig = getPrayerMapping(prayerType);
-    if (!prayerConfig) {
-      throw new AppError("Prayer type not found", 404, "PRAYER_NOT_FOUND");
+    const rakats = parseInt(rekatNumber);
+    
+    // Validate rekat number
+    if (![2, 3, 4].includes(rakats)) {
+      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
     }
 
-    // Use directly imported data
-    const prayerData = school === "shafi" ? namazDataShafi : namazDataHanefi;
+    // Use data service to get prayer data
+    const namazDetails = await dataService.getNamezDetails();
+    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
     
     // Find the prayer data by number of rakats
-    const prayer = prayerData.find((p: any) => p.num === prayerConfig.rakats);
+    const prayer = prayerData.find((p: any) => p.num === rakats);
 
     if (!prayer) {
       throw new AppError("Prayer configuration not found", 404, "PRAYER_CONFIG_NOT_FOUND");
@@ -162,10 +163,7 @@ export const getPrayerByType = asyncHandler(
 
     // Create the response with the correct structure
     const prayerResponse = {
-      type: prayerType,
-      rakats: prayerConfig.rakats,
-      name: prayerConfig.name,
-      localName: prayerConfig.localName,
+      rakats: rakats,
       steps: prayer.steps || []
     };
 
@@ -178,30 +176,48 @@ export const getPrayerByType = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /prayers/{rekatNumber}/steps:
+ *   get:
+ *     summary: Get prayer steps by rekat number
+ *     description: Retrieve all steps for a prayer with specific number of rekats
+ *     tags: [Prayers]
+ *     parameters:
+ *       - name: rekatNumber
+ *         in: path
+ *         required: true
+ *         description: Number of rekats (2, 3, 4)
+ *         schema:
+ *           type: integer
+ *           enum: [2, 3, 4]
+ *       - $ref: '#/components/parameters/LanguageParam'
+ *     responses:
+ *       200:
+ *         description: Prayer steps
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundResponse'
+ */
 export const getPrayerSteps = asyncHandler(
   async (req: Request, res: Response) => {
-    const { prayerType, rakatCount } = req.params;
+    const { rekatNumber } = req.params;
     const language = req.language || "en";
     const school = getSchoolByLanguage(language);
 
-    // Validate prayer type
-    const prayerConfig = getPrayerMapping(prayerType);
-    if (!prayerConfig) {
-      throw new AppError("Invalid prayer type", 400, "INVALID_PRAYER_TYPE");
+    const rakats = parseInt(rekatNumber);
+    
+    // Validate rekat number
+    if (![2, 3, 4].includes(rakats)) {
+      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
     }
 
-    // Use directly imported data
-    const prayerData = school === "shafi" ? namazDataShafi : namazDataHanefi;
-    const rakats = parseInt(rakatCount);
-
-    // Validate rakat count for the prayer type
-    if (prayerConfig.rakats !== rakats) {
-      throw new AppError(
-        `${prayerType} prayer must have ${prayerConfig.rakats} rakats`,
-        400,
-        "INVALID_RAKAT_COUNT"
-      );
-    }
+    // Use data service to get prayer data
+    const namazDetails = await dataService.getNamezDetails();
+    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
 
     const prayer = prayerData.find(
       (p: any) => p.num === rakats
@@ -224,8 +240,6 @@ export const getPrayerSteps = asyncHandler(
     sendSuccess(
       res,
       {
-        prayer: prayerType,
-        prayerName: prayerConfig.name,
         rakats,
         school,
         steps: stepsWithUrls,
@@ -236,31 +250,56 @@ export const getPrayerSteps = asyncHandler(
   }
 );
 
+/**
+ * @swagger
+ * /prayers/{rekatNumber}/steps/{stepId}:
+ *   get:
+ *     summary: Get specific prayer step by rekat number and step ID
+ *     description: Retrieve a specific step for a prayer with specific number of rekats
+ *     tags: [Prayers]
+ *     parameters:
+ *       - name: rekatNumber
+ *         in: path
+ *         required: true
+ *         description: Number of rekats (2, 3, 4)
+ *         schema:
+ *           type: integer
+ *           enum: [2, 3, 4]
+ *       - name: stepId
+ *         in: path
+ *         required: true
+ *         description: Step index (0-based)
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *       - $ref: '#/components/parameters/LanguageParam'
+ *     responses:
+ *       200:
+ *         description: Prayer step details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundResponse'
+ */
 export const getPrayerStep = asyncHandler(
   async (req: Request, res: Response) => {
-    const { prayerType, rakatCount, stepId } = req.params;
+    const { rekatNumber, stepId } = req.params;
     const language = req.language || "en";
     const school = getSchoolByLanguage(language);
 
-    // Validate prayer type
-    const prayerConfig = getPrayerMapping(prayerType);
-    if (!prayerConfig) {
-      throw new AppError("Invalid prayer type", 400, "INVALID_PRAYER_TYPE");
-    }
-
-    // Use directly imported data
-    const prayerData = school === "shafi" ? namazDataShafi : namazDataHanefi;
-    const rakats = parseInt(rakatCount);
+    const rakats = parseInt(rekatNumber);
     const stepIndex = parseInt(stepId);
 
-    // Validate rakat count for the prayer type
-    if (prayerConfig.rakats !== rakats) {
-      throw new AppError(
-        `${prayerType} prayer must have ${prayerConfig.rakats} rakats`,
-        400,
-        "INVALID_RAKAT_COUNT"
-      );
+    // Validate rekat number
+    if (![2, 3, 4].includes(rakats)) {
+      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
     }
+
+    // Use data service to get prayer data
+    const namazDetails = await dataService.getNamezDetails();
+    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
 
     const prayer = prayerData.find(
       (p: any) => p.num === rakats
@@ -289,8 +328,6 @@ export const getPrayerStep = asyncHandler(
     sendSuccess(
       res,
       {
-        prayer: prayerType,
-        prayerName: prayerConfig.name,
         rakats,
         stepIndex,
         totalSteps: prayer.steps.length,

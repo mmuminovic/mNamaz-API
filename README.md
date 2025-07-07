@@ -15,10 +15,12 @@ A comprehensive RESTful API for Islamic prayer (Namaz/Salah) guidance, built wit
 ## API Documentation
 
 The API includes comprehensive Swagger/OpenAPI documentation accessible at:
+
 - **Swagger UI**: `http://localhost:3000/api/v1/docs`
 - **OpenAPI Spec**: `http://localhost:3000/api/v1/openapi.json`
 
 The documentation includes:
+
 - 📖 Complete endpoint descriptions
 - 🔧 Interactive API testing
 - 📝 Request/response examples
@@ -30,45 +32,53 @@ The documentation includes:
 ### Core Endpoints
 
 #### Ablution (Wudu)
+
 - `GET /api/v1/ablution/steps` - Get all ablution steps
 - `GET /api/v1/ablution/steps/:stepId` - Get specific ablution step
 
 #### Prayers
+
 - `GET /api/v1/prayers` - Get all prayers
 - `GET /api/v1/prayers/:prayerType` - Get specific prayer type
 - `GET /api/v1/prayers/:prayerType/rakats/:rakatCount` - Get prayer with specific rakats
 - `GET /api/v1/prayers/:prayerType/rakats/:rakatCount/steps` - Get prayer steps
 
 #### Lessons
+
 - `GET /api/v1/lessons` - Get all prayer lessons
 - `GET /api/v1/lessons/:lessonId` - Get specific lesson
 
 #### Dhikr (Remembrance)
+
 - `GET /api/v1/dhikr` - Get all dhikr
 - `GET /api/v1/dhikr/after-prayer` - Get post-prayer dhikr
 - `GET /api/v1/dhikr/:dhikrId` - Get specific dhikr
 
 #### Special Prayers
+
 - `GET /api/v1/special-prayers` - Get all special prayers
 - `GET /api/v1/special-prayers/:type` - Get specific special prayer (bajram, dzenaza, istihara, duha)
 - `GET /api/v1/special-prayers/:type/steps` - Get special prayer steps
 
 #### Audio Resources
+
 - `GET /api/v1/audio` - Get all audio resources
 - `GET /api/v1/audio/:audioId` - Get specific audio resource
 - `GET /api/v1/audio/school/:school` - Get audio for specific school (hanafi/shafi)
 
 #### Localization
+
 - `GET /api/v1/locales` - Get supported languages
 - `GET /api/v1/locales/:language` - Get all translations for language
 - `GET /api/v1/locales/:language/:key` - Get specific translation
 
 #### Media
+
 - `GET /api/v1/media/audio/:filename` - Stream audio files
 - `GET /api/v1/media/images/:filename` - Serve image files
 
 #### System
-- `GET /api/v1/health` - Health check
+
 - `GET /api/v1/config` - API configuration
 
 ## Query Parameters
@@ -81,28 +91,33 @@ The documentation includes:
 ## Installation
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd mnamaz-api
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    ```
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -149,6 +164,7 @@ CACHE_TTL=3600
 ## Audio and Media Files Strategy
 
 ### Current Implementation (Local Storage)
+
 - Audio files are stored locally in `/data/namaz/audio/`
 - Images are stored locally in `/data/namaz/images/`
 - Files are served with proper caching headers
@@ -157,29 +173,34 @@ CACHE_TTL=3600
 ### Recommended Production Setup
 
 #### Option 1: Object Storage (Recommended)
+
 ```env
 ENABLE_CDN=true
 CDN_URL=https://your-cdn-domain.com
 ```
 
 **Benefits:**
+
 - Scalable and cost-effective
 - Global CDN distribution
 - Automatic compression and optimization
 - Reduced server load
 
 **Recommended Services:**
+
 - AWS S3 + CloudFront
 - Google Cloud Storage + CDN
 - Azure Blob Storage + CDN
 - Cloudflare R2
 
 #### Option 2: Local Storage with CDN
+
 - Keep files local but use CDN for global distribution
 - Use services like Cloudflare or AWS CloudFront
 - Configure proper cache headers
 
 #### Option 3: Hybrid Approach
+
 - Critical/frequently accessed files on CDN
 - Less frequently accessed files served locally
 - Implement fallback mechanism
@@ -188,7 +209,7 @@ CDN_URL=https://your-cdn-domain.com
 
 ```typescript
 // Example CDN URL generation
-const getMediaUrl = (filename: string, type: 'audio' | 'image') => {
+const getMediaUrl = (filename: string, type: "audio" | "image") => {
   if (config.media.enableCDN && config.media.cdnUrl) {
     return `${config.media.cdnUrl}/${type}/${filename}`;
   }
@@ -201,19 +222,20 @@ const getMediaUrl = (filename: string, type: 'audio' | 'image') => {
 ### Docker Deployment
 
 1. **Create Dockerfile**
+
    ```dockerfile
    FROM node:18-alpine
-   
+
    WORKDIR /app
-   
+
    COPY package*.json ./
    RUN npm ci --only=production
-   
+
    COPY . .
    RUN npm run build
-   
+
    EXPOSE 3000
-   
+
    CMD ["npm", "start"]
    ```
 
@@ -226,23 +248,27 @@ const getMediaUrl = (filename: string, type: 'audio' | 'image') => {
 ### PM2 Deployment
 
 1. **Install PM2**
+
    ```bash
    npm install -g pm2
    ```
 
 2. **Create ecosystem.config.js**
+
    ```javascript
    module.exports = {
-     apps: [{
-       name: 'mnamaz-api',
-       script: 'dist/server.js',
-       instances: 'max',
-       exec_mode: 'cluster',
-       env: {
-         NODE_ENV: 'production',
-         PORT: 3000
-       }
-     }]
+     apps: [
+       {
+         name: "mnamaz-api",
+         script: "dist/server.js",
+         instances: "max",
+         exec_mode: "cluster",
+         env: {
+           NODE_ENV: "production",
+           PORT: 3000,
+         },
+       },
+     ],
    };
    ```
 
@@ -255,6 +281,7 @@ const getMediaUrl = (filename: string, type: 'audio' | 'image') => {
 ### Heroku Deployment
 
 1. **Create Procfile**
+
    ```
    web: npm run start:prod
    ```
@@ -286,6 +313,7 @@ All API responses follow this consistent format:
 ```
 
 Error responses:
+
 ```json
 {
   "success": false,

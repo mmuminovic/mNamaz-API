@@ -1370,6 +1370,12 @@ export const nonMandatoryNamaz = {
         rekati: 2,
         steps: istiharaNamaz[0].steps,
     },
+    duha: {
+        title: 'duha_namaz_title',
+        description: 'duha_namaz_description',
+        rekati: 2,
+        steps: duhaNamaz[0].steps,
+    },
 };
 
 export const getNonMandatoryNamazData = (prayerType: string) => {

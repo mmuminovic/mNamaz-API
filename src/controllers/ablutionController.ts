@@ -4,6 +4,7 @@ import localizationService from '../services/localizationService';
 import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
+import { processAssetUrls } from '../utils/urlHelper';
 
 /**
  * @swagger
@@ -54,7 +55,7 @@ export const getAblutionSteps = asyncHandler(async (req: Request, res: Response)
         if (item.localeKey) {
           processedItem.text = await localizationService.getTranslation(item.localeKey, language);
         } else {
-          processedItem.text = item.text || '';
+          processedItem.text = (item as any).text || '';
         }
         
         return processedItem;
@@ -64,7 +65,8 @@ export const getAblutionSteps = asyncHandler(async (req: Request, res: Response)
     return processedStep;
   }));
   
-  sendSuccess(res, processedSteps, 200, { language });
+  const stepsWithUrls = processAssetUrls(processedSteps);
+  sendSuccess(res, stepsWithUrls, 200, { language });
 });
 
 /**
@@ -127,12 +129,13 @@ export const getAblutionStep = asyncHandler(async (req: Request, res: Response) 
       if (item.localeKey) {
         processedItem.text = await localizationService.getTranslation(item.localeKey, language);
       } else {
-        processedItem.text = item.text || '';
+        processedItem.text = (item as any).text || '';
       }
       
       return processedItem;
     }));
   }
   
-  sendSuccess(res, processedStep, 200, { language });
+  const stepWithUrls = processAssetUrls(processedStep);
+  sendSuccess(res, stepWithUrls, 200, { language });
 });
