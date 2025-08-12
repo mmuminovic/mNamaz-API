@@ -1,9 +1,5 @@
 import { Router } from "express";
-import {
-  getDhikrList,
-  getDhikrAfterPrayer,
-  getDhikrById,
-} from "../controllers/dhikrController";
+import { getDhikrList, getDhikrById } from "../controllers/dhikrController";
 import { validateLanguage } from "../middleware/validation";
 
 const router = Router();

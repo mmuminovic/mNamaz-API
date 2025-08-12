@@ -1,7 +1,6 @@
 /**
- * Direct prayer mappings for use in controllers
- * This bypasses the complex namazDetails.ts parsing and provides
- * a direct mapping of prayer types to their configurations
+ * Prayer type mappings for use in controllers
+ * Provides a direct mapping of prayer types to their configurations
  */
 
 export interface PrayerMapping {
@@ -43,47 +42,6 @@ export const PRAYER_TYPES: Record<string, PrayerMapping> = {
     localName: "jacija",
   },
 };
-
-// Create mock prayer data with the expected structure
-export function createMockPrayerData(): any[] {
-  return [
-    {
-      type: "fajr",
-      rakats: 2,
-      name: "Fajr",
-      localName: "sabah",
-      steps: [], // Will be populated from namazDetails if available
-    },
-    {
-      type: "dhuhr",
-      rakats: 4,
-      name: "Dhuhr",
-      localName: "podne",
-      steps: [],
-    },
-    {
-      type: "asr",
-      rakats: 4,
-      name: "Asr",
-      localName: "ikindija",
-      steps: [],
-    },
-    {
-      type: "maghrib",
-      rakats: 3,
-      name: "Maghrib",
-      localName: "aksam",
-      steps: [],
-    },
-    {
-      type: "isha",
-      rakats: 4,
-      name: "Isha",
-      localName: "jacija",
-      steps: [],
-    },
-  ];
-}
 
 export function getPrayerMapping(
   prayerType: string
