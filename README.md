@@ -51,7 +51,6 @@ The documentation includes:
 #### Dhikr (Remembrance)
 
 - `GET /api/v1/dhikr` - Get all dhikr
-- `GET /api/v1/dhikr/after-prayer` - Get post-prayer dhikr
 - `GET /api/v1/dhikr/:dhikrId` - Get specific dhikr
 
 #### Special Prayers

@@ -1,6 +1,10 @@
-import { Router } from 'express';
-import { getDhikrList, getDhikrAfterPrayer, getDhikrById } from '../controllers/dhikrController';
-import { validateLanguage } from '../middleware/validation';
+import { Router } from "express";
+import {
+  getDhikrList,
+  getDhikrAfterPrayer,
+  getDhikrById,
+} from "../controllers/dhikrController";
+import { validateLanguage } from "../middleware/validation";
 
 const router = Router();
 
@@ -8,7 +12,7 @@ const router = Router();
  * @swagger
  * /dhikr:
  *   get:
- *     summary: Get all dhikr (remembrances)
+ *     summary: Get all dhikrs after salah
  *     description: Retrieve a list of all available dhikr with localized content
  *     tags: [Dhikr]
  *     parameters:
@@ -32,37 +36,7 @@ const router = Router();
  *       500:
  *         $ref: '#/components/responses/ErrorResponse'
  */
-router.get('/', validateLanguage, getDhikrList);
-
-/**
- * @swagger
- * /dhikr/after-prayer:
- *   get:
- *     summary: Get dhikr for after prayer
- *     description: Retrieve dhikr specifically recommended after completing prayers
- *     tags: [Dhikr]
- *     parameters:
- *       - $ref: '#/components/parameters/LanguageParam'
- *     responses:
- *       200:
- *         description: Post-prayer dhikr
- *         content:
- *           application/json:
- *             schema:
- *               allOf:
- *                 - $ref: '#/components/schemas/ApiResponse'
- *                 - type: object
- *                   properties:
- *                     data:
- *                       type: array
- *                       items:
- *                         $ref: '#/components/schemas/Dhikr'
- *       400:
- *         $ref: '#/components/responses/ValidationErrorResponse'
- *       500:
- *         $ref: '#/components/responses/ErrorResponse'
- */
-router.get('/after-prayer', validateLanguage, getDhikrAfterPrayer);
+router.get("/", validateLanguage, getDhikrList);
 
 /**
  * @swagger
@@ -99,6 +73,6 @@ router.get('/after-prayer', validateLanguage, getDhikrAfterPrayer);
  *       500:
  *         $ref: '#/components/responses/ErrorResponse'
  */
-router.get('/:dhikrId', validateLanguage, getDhikrById);
+router.get("/:dhikrId", validateLanguage, getDhikrById);
 
 export default router;

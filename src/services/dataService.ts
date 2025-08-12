@@ -207,43 +207,51 @@ class DataService {
   async getNamezDetails(): Promise<{ namazDataHanefi: any[], namazDataShafi: any[] }> {
     const filePath = path.join(config.paths.data, 'namaz/namazDetails.ts');
     
+    // Try direct import of the data first
+    try {
+      const { namazDataHanefi, namazDataShafi } = await import(filePath);
+      
+      if (namazDataHanefi && namazDataShafi) {
+        // Return the raw data with num property
+        return {
+          namazDataHanefi: namazDataHanefi,
+          namazDataShafi: namazDataShafi
+        };
+      }
+    } catch (error) {
+      logger.warn('Could not import namaz details directly, trying loadModule', error);
+    }
+    
     try {
       // Try to load the actual data from the file
       const module = await this.loadModule<any>(filePath);
       
       if (module.namazDataHanefi && module.namazDataShafi) {
-        // If we have the actual data, try to map it to prayer types
-        const hanefiWithTypes = this.mapRakatsToPrayerTypes(module.namazDataHanefi);
-        const shafiWithTypes = this.mapRakatsToPrayerTypes(module.namazDataShafi);
-        
+        // Return the raw data with num property
         return {
-          namazDataHanefi: hanefiWithTypes,
-          namazDataShafi: shafiWithTypes
+          namazDataHanefi: module.namazDataHanefi,
+          namazDataShafi: module.namazDataShafi
         };
       }
     } catch (error) {
-      logger.warn('Could not load namaz details from file, using direct import', error);
+      logger.warn('Could not load namaz details from file, using fallback data', error);
     }
     
-    // Try direct import of the data
-    try {
-      const { namazDataHanefi, namazDataShafi } = await import(filePath);
-      
-      if (namazDataHanefi && namazDataShafi) {
-        const hanefiWithTypes = this.mapRakatsToPrayerTypes(namazDataHanefi);
-        const shafiWithTypes = this.mapRakatsToPrayerTypes(namazDataShafi);
-        
-        return {
-          namazDataHanefi: hanefiWithTypes,
-          namazDataShafi: shafiWithTypes
-        };
+    // Fallback to mock data with correct structure - using num property instead of rakats
+    const mockData = [
+      {
+        num: 2,
+        steps: [] // Empty steps array for 2 rakat prayers
+      },
+      {
+        num: 3,
+        steps: [] // Empty steps array for 3 rakat prayers
+      },
+      {
+        num: 4,
+        steps: [] // Empty steps array for 4 rakat prayers
       }
-    } catch (error) {
-      logger.warn('Could not import namaz details, using fallback data', error);
-    }
-    
-    // Fallback to mock data with correct structure
-    const mockData = createMockPrayerData();
+    ];
     
     return {
       namazDataHanefi: mockData,
@@ -251,50 +259,6 @@ class DataService {
     };
   }
 
-  private mapRakatsToPrayerTypes(rakatData: any[]): any[] {
-    const mappedData: any[] = [];
-    
-    rakatData.forEach((entry: any) => {
-      if (entry.num === 2) {
-        // 2 rakats = Fajr
-        mappedData.push({
-          type: 'fajr',
-          rakats: 2,
-          name: 'Fajr',
-          localName: 'sabah',
-          steps: Array.isArray(entry.steps) ? entry.steps : []
-        });
-      } else if (entry.num === 3) {
-        // 3 rakats = Maghrib
-        mappedData.push({
-          type: 'maghrib',
-          rakats: 3,
-          name: 'Maghrib',
-          localName: 'aksam',
-          steps: Array.isArray(entry.steps) ? entry.steps : []
-        });
-      } else if (entry.num === 4) {
-        // 4 rakats = Dhuhr, Asr, Isha
-        ['dhuhr', 'asr', 'isha'].forEach(prayerType => {
-          const names = {
-            dhuhr: { name: 'Dhuhr', localName: 'podne' },
-            asr: { name: 'Asr', localName: 'ikindija' },
-            isha: { name: 'Isha', localName: 'jacija' }
-          };
-          
-          mappedData.push({
-            type: prayerType,
-            rakats: 4,
-            name: names[prayerType as keyof typeof names].name,
-            localName: names[prayerType as keyof typeof names].localName,
-            steps: Array.isArray(entry.steps) ? entry.steps : []
-          });
-        });
-      }
-    });
-    
-    return mappedData;
-  }
 
   async getLessons(): Promise<Lesson[]> {
     const filePath = path.join(config.paths.data, 'namaz/namazIntro.ts');
