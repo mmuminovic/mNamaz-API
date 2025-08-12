@@ -1,8 +1,49 @@
 # mNamaz API
 
-A comprehensive RESTful API for Islamic prayer (Namaz/Salah) guidance, built with Node.js, Express, and TypeScript. This API provides multilingual support for prayer instructions, ablution (wudu) steps, dhikr, and audio resources.
+A comprehensive RESTful API backend service for the **mNamaz** mobile application - your complete Islamic prayer companion. Built with Node.js, Express, and TypeScript, this API powers the mNamaz app available on both iOS and Android platforms, providing multilingual support for prayer instructions, ablution (wudu) steps, dhikr, and audio resources.
 
-## Features
+## 📱 Mobile Application
+
+**mNamaz** is a popular Islamic prayer application that helps Muslims worldwide perform their prayers correctly. The app provides step-by-step guidance, audio recitations, and educational content in multiple languages.
+
+### Download mNamaz App
+
+<div align="center">
+  <a href="https://apps.apple.com/rs/app/mnamaz-prayer-step-by-step/id1570021798">
+    <img src="./assets/appstore.png" alt="Download on App Store" height="60">
+  </a>
+  <a href="https://play.google.com/store/apps/details?id=com.mojprvinamaz.app">
+    <img src="./assets/googleplay.png" alt="Get it on Google Play" height="60">
+  </a>
+</div>
+
+**App Store**: [https://apps.apple.com/rs/app/mnamaz-prayer-step-by-step/id1570021798](https://apps.apple.com/rs/app/mnamaz-prayer-step-by-step/id1570021798)  
+**Google Play**: [https://play.google.com/store/apps/details?id=com.mojprvinamaz.app](https://play.google.com/store/apps/details?id=com.mojprvinamaz.app)
+
+### App Features
+
+- **Step-by-step prayer guidance** with visual illustrations
+- **Audio recitations** for learning proper pronunciation
+- **Multiple languages** supporting diverse Muslim communities
+- **Hanafi and Shafi schools** of Islamic jurisprudence
+- **Ablution (Wudu) tutorial** with detailed steps
+- **Special prayers** including Eid, Janazah, and Istikhara
+- **Dhikr counter** and post-prayer remembrances
+
+## 🚀 About This API
+
+This API serves as the backend infrastructure for the mNamaz mobile application, providing all the essential data and content that powers the app's features. It's designed to be scalable, secure, and efficient, ensuring smooth operation for thousands of users worldwide.
+
+### Architecture Overview
+
+The mNamaz ecosystem consists of:
+
+- **Mobile Apps**: Native iOS and Android applications for end users
+- **RESTful API**: This Node.js/Express backend service
+- **Content Management**: Structured prayer data, audio files, and translations
+- **Media Delivery**: Optimized serving of audio recitations and visual guides
+
+### API Features
 
 - **🌍 Multilingual Support**: 10 languages (English, Bosnian, Turkish, Albanian, German, Spanish, French, Indonesian, Russian, Urdu)
 - **📖 Comprehensive Prayer Guide**: Step-by-step instructions for all daily prayers
@@ -86,6 +127,26 @@ The documentation includes:
 - `school` - School of thought (hanafi, shafi)
 - `category` - Filter audio by category (prayer, dhikr, azan, iqamah)
 - `prefix` - Filter translations by key prefix
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/mnamaz-api.git
+cd mnamaz-api
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+
+# Start development server
+npm run dev
+
+# API will be available at http://localhost:3000/api/v1
+# Swagger documentation at http://localhost:3000/api/v1/docs
+```
 
 ## Installation
 
@@ -370,7 +431,16 @@ src/
 └── server.ts       # Server entry point
 ```
 
-## Contributing
+## 🤝 Contributing
+
+Contributions are welcome! The mNamaz API is open source to help the Muslim community worldwide. Whether you want to:
+
+- Add support for more languages
+- Improve prayer content accuracy
+- Enhance API performance
+- Fix bugs or add features
+
+Please feel free to:
 
 1. Fork the repository
 2. Create a feature branch
@@ -378,10 +448,26 @@ src/
 4. Add tests if applicable
 5. Submit a pull request
 
-## License
+## 📄 License
 
 This project is licensed under the ISC License.
 
-## Support
+## 💬 Support
 
-For support and questions, please create an issue in the repository.
+For support and questions:
+
+- **API Issues**: Create an issue in this repository
+- **Mobile App Support**: Contact through the app store listings
+- **General Inquiries**: Open a discussion in the repository
+
+## 🙏 Acknowledgments
+
+This API was developed to serve the Muslim community by providing accurate and accessible prayer guidance. Special thanks to all contributors and the users of the mNamaz application worldwide.
+
+---
+
+<div align="center">
+  <strong>mNamaz API</strong> - Empowering Muslims with technology for better prayer practice
+  <br>
+  Made with ❤️ for the Ummah
+</div>
