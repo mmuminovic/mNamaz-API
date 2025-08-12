@@ -8,12 +8,12 @@ A comprehensive RESTful API backend service for the **mNamaz** mobile applicatio
 
 ### Download mNamaz App
 
-<div align="center">
+<div>
   <a href="https://apps.apple.com/rs/app/mnamaz-prayer-step-by-step/id1570021798">
     <img src="./assets/appstore.png" alt="Download on App Store" height="60">
   </a>
   <a href="https://play.google.com/store/apps/details?id=com.mojprvinamaz.app">
-    <img src="./assets/googleplay.png" alt="Get it on Google Play" height="60">
+    <img src="./assets/googleplay.png" alt="Get it on Google Play" height="40">
   </a>
 </div>
 
@@ -450,7 +450,7 @@ Please feel free to:
 
 ## 📄 License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 💬 Support
 
