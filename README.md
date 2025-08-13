@@ -47,11 +47,9 @@ The mNamaz ecosystem consists of:
 
 - **🌍 Multilingual Support**: 10 languages (English, Bosnian, Turkish, Albanian, German, Spanish, French, Indonesian, Russian, Urdu)
 - **📖 Comprehensive Prayer Guide**: Step-by-step instructions for all daily prayers
-- **🕌 Multiple Schools**: Support for Hanafi and Shafi schools of thought
 - **🎵 Audio Resources**: MP3 files for recitations and dhikr
 - **📚 Educational Content**: Lessons covering prayer fundamentals
 - **🔐 Production Ready**: Security, rate limiting, error handling, and logging
-- **⚡ High Performance**: Caching, compression, and optimized responses
 
 ## API Documentation
 

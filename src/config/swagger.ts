@@ -13,7 +13,6 @@ const options: swaggerJsdoc.Options = {
         ## Features
         - 🌍 **Multi-language Support**: 10 languages (English, Bosnian, Turkish, Albanian, German, Spanish, French, Indonesian, Russian, Urdu)
         - 📖 **Prayer Instructions**: Step-by-step guidance for all daily prayers
-        - 🕌 **Multiple Schools**: Support for Hanafi and Shafi schools of thought
         - 🎵 **Audio Resources**: MP3 files for recitations and dhikr
         - 📚 **Educational Content**: Lessons covering prayer fundamentals
         
