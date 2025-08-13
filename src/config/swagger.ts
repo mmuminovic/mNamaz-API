@@ -31,16 +31,19 @@ const options: swaggerJsdoc.Options = {
         url: 'https://opensource.org/licenses/ISC'
       }
     },
-    servers: [
-      {
-        url: `http://localhost:${config.port}${config.api.prefix}/${config.api.version}`,
-        description: 'Development server'
-      },
-      {
-        url: `https://api.mnamaz.com/${config.api.version}`,
-        description: 'Production server'
-      }
-    ],
+    servers: config.env === 'production' 
+      ? [
+          {
+            url: `https://api.mnamaz.com/${config.api.version}`,
+            description: 'Production server'
+          }
+        ]
+      : [
+          {
+            url: `http://localhost:${config.port}${config.api.prefix}/${config.api.version}`,
+            description: 'Development server'
+          }
+        ],
     components: {
       schemas: {
         ApiResponse: {

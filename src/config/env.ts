@@ -18,7 +18,7 @@ const envSchema = z.object({
   HELMET_ENABLED: z.string().transform((val) => val === 'true').default('true'),
   DEFAULT_LANGUAGE: z.string().default('en'),
   SUPPORTED_LANGUAGES: z.string().default('en,bs,tr,al,de,es,fr,id,ru,ur'),
-  MEDIA_BASE_URL: z.string().default('http://localhost:3000/api/v1/media'),
+  MEDIA_BASE_URL: z.string().optional(),
   ENABLE_CDN: z.string().transform((val) => val === 'true').default('false'),
   CDN_URL: z.string().optional(),
   CACHE_TTL: z.string().transform(Number).default('3600'),
@@ -28,9 +28,22 @@ const env = envSchema.parse(process.env);
 
 // Helper function to determine base URL
 const getBaseUrl = (): string => {
-  const protocol = env.NODE_ENV === 'production' && !env.HOST.includes('localhost') ? 'https' : 'http';
+  if (env.NODE_ENV === 'production') {
+    return 'https://api.mnamaz.com';
+  }
   const host = env.HOST === '0.0.0.0' ? 'localhost' : env.HOST;
-  return `${protocol}://${host}:${env.PORT}`;
+  return `http://${host}:${env.PORT}`;
+};
+
+// Helper function to determine media base URL
+const getMediaBaseUrl = (): string => {
+  if (env.MEDIA_BASE_URL) {
+    return env.MEDIA_BASE_URL;
+  }
+  if (env.NODE_ENV === 'production') {
+    return `https://api.mnamaz.com/${env.API_VERSION}/media`;
+  }
+  return `http://localhost:${env.PORT}${env.API_PREFIX}/${env.API_VERSION}/media`;
 };
 
 export const config = {
@@ -61,7 +74,7 @@ export const config = {
     supportedLanguages: env.SUPPORTED_LANGUAGES.split(','),
   },
   media: {
-    baseUrl: env.MEDIA_BASE_URL,
+    baseUrl: getMediaBaseUrl(),
     enableCDN: env.ENABLE_CDN,
     cdnUrl: env.CDN_URL,
   },

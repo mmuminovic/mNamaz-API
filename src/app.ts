@@ -76,7 +76,12 @@ export const initApp = async () => {
   const i18nMiddleware = await initI18n();
   app.use(i18nMiddleware);
   
-  app.use(`${config.api.prefix}/${config.api.version}`, routes);
+  // In production, the API is hosted directly on api.mnamaz.com without /api prefix
+  const apiPath = config.env === 'production' 
+    ? `/${config.api.version}` 
+    : `${config.api.prefix}/${config.api.version}`;
+  
+  app.use(apiPath, routes);
   
   app.use(notFoundHandler);
   app.use(globalErrorHandler);

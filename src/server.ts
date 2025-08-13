@@ -14,7 +14,13 @@ const startServer = async () => {
     
     const server = app.listen(config.port, config.host, () => {
       logger.info(`Server running on ${config.host}:${config.port} in ${config.env} mode`);
-      logger.info(`API available at: http://${config.host}:${config.port}${config.api.prefix}/${config.api.version}`);
+      
+      // Show correct API URL based on environment
+      const apiUrl = config.env === 'production' 
+        ? `https://api.mnamaz.com/${config.api.version}`
+        : `http://${config.host}:${config.port}${config.api.prefix}/${config.api.version}`;
+      
+      logger.info(`API available at: ${apiUrl}`);
     });
 
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
