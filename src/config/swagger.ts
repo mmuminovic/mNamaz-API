@@ -149,7 +149,7 @@ const options: swaggerJsdoc.Options = {
           properties: {
             title: {
               type: 'string',
-              description: 'Step title'
+              description: 'Step title (localized)'
             },
             type: {
               type: 'string',
@@ -159,37 +159,100 @@ const options: swaggerJsdoc.Options = {
             data: {
               type: 'array',
               items: {
-                '$ref': '#/components/schemas/LocaleContent'
+                '$ref': '#/components/schemas/StepDataItem'
               },
-              description: 'Step instructions'
+              description: 'Step instructions - can include text with placeholders or card objects with Arabic/transliteration/translation'
             },
             images: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
+                format: 'uri'
               },
-              description: 'Associated image filenames'
+              description: 'Associated image URLs'
             },
             audio: {
-              oneOf: [
-                { type: 'string' },
-                { type: 'array', items: { type: 'string' } }
-              ],
-              description: 'Audio file(s) for this step'
-            },
-            sunneti: {
               type: 'array',
               items: {
-                '$ref': '#/components/schemas/LocaleContent'
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'integer',
+                    description: 'Audio identifier'
+                  },
+                  audio: {
+                    type: 'string',
+                    format: 'uri',
+                    description: 'Audio file URL'
+                  }
+                }
               },
-              description: 'Sunnah practices for this step'
+              description: 'Audio resources for this step'
+            },
+            sunneti: {
+              type: 'object',
+              properties: {
+                title: {
+                  type: 'string',
+                  description: 'Sunnah section title'
+                },
+                list: {
+                  type: 'array',
+                  items: {
+                    type: 'object'
+                  },
+                  description: 'List of sunnah practices'
+                },
+                supportedLanguages: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  },
+                  description: 'Languages that support these sunnah practices'
+                }
+              },
+              description: 'Sunnah (recommended) practices for this step'
             },
             isOptional: {
               type: 'boolean',
               description: 'Whether this step is optional'
             }
           },
-          required: ['data']
+          required: ['data'],
+          example: {
+            title: 'Going to ruku\' (bowing)',
+            data: [
+              {
+                text: 'Then you say ALLAHU AKBAR (ALLAH IS THE GREATEST) and bow down...',
+                zikr: 'ALLAHU AKBAR',
+                zikrTr: 'ALLAH IS THE GREATEST'
+              },
+              {
+                card: true,
+                title: 'Dhikr on ruku\'',
+                arabic: [
+                  {
+                    text: 'سُبْحَانَ رَبِّيَ ٱلْعَظِيم',
+                    bold: true
+                  }
+                ],
+                transliteration: [
+                  {
+                    text: 'SUBHAANA RABBIY-AL-\'ADHEEM'
+                  }
+                ],
+                translation: [
+                  {
+                    text: 'Glory be to my Lord, the Great'
+                  }
+                ],
+                audio: '/api/media/audio/subhane-rabijel-azim.mp3'
+              }
+            ],
+            images: [
+              '/api/media/images/bowing.png'
+            ]
+          }
         },
         Lesson: {
           type: 'object',
@@ -249,6 +312,130 @@ const options: swaggerJsdoc.Options = {
             }
           },
           required: ['id', 'title', 'arabic', 'audio']
+        },
+        CardContent: {
+          type: 'object',
+          properties: {
+            card: {
+              type: 'boolean',
+              enum: [true],
+              description: 'Indicates this is a card-type content'
+            },
+            title: {
+              type: 'string',
+              description: 'Card title (localized)'
+            },
+            arabic: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  text: {
+                    type: 'string',
+                    description: 'Arabic text in Arabic script (e.g., سُبْحَانَ رَبِّيَ ٱلْعَظِيم)'
+                  },
+                  bold: {
+                    type: 'boolean',
+                    description: 'Whether the text should be displayed in bold'
+                  },
+                  borderTop: {
+                    type: 'boolean',
+                    description: 'Whether to show a border above this text'
+                  }
+                },
+                required: ['text']
+              },
+              description: 'Arabic text content (actual Arabic script)'
+            },
+            transliteration: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  text: {
+                    type: 'string',
+                    description: 'Transliteration in Latin script (e.g., SUBHAANA RABBIY-AL-\'ADHEEM)'
+                  },
+                  bold: {
+                    type: 'boolean',
+                    description: 'Whether the text should be displayed in bold'
+                  }
+                },
+                required: ['text']
+              },
+              description: 'Transliteration in Latin characters'
+            },
+            translation: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  text: {
+                    type: 'string',
+                    description: 'English translation/meaning (e.g., Glory be to my Lord, the Great)'
+                  },
+                  bold: {
+                    type: 'boolean',
+                    description: 'Whether the text should be displayed in bold'
+                  }
+                },
+                required: ['text']
+              },
+              description: 'Translation/meaning in the requested language'
+            },
+            audio: {
+              type: 'string',
+              description: 'Audio file URL for this content'
+            }
+          },
+          required: ['card', 'arabic', 'transliteration', 'translation'],
+          example: {
+            card: true,
+            title: 'Dhikr on ruku\'',
+            arabic: [
+              {
+                text: 'سُبْحَانَ رَبِّيَ ٱلْعَظِيم',
+                bold: true
+              }
+            ],
+            transliteration: [
+              {
+                text: 'SUBHAANA RABBIY-AL-\'ADHEEM'
+              }
+            ],
+            translation: [
+              {
+                text: 'Glory be to my Lord, the Great'
+              }
+            ],
+            audio: '/api/media/audio/subhane-rabijel-azim.mp3'
+          }
+        },
+        StepDataItem: {
+          oneOf: [
+            {
+              type: 'object',
+              properties: {
+                text: {
+                  type: 'string',
+                  description: 'Localized instruction text with placeholders replaced'
+                },
+                zikr: {
+                  type: 'string',
+                  description: 'Resolved zikr transliteration (e.g., ALLAHU AKBAR)'
+                },
+                zikrTr: {
+                  type: 'string',
+                  description: 'Resolved zikr translation (e.g., ALLAH IS THE GREATEST)'
+                }
+              },
+              required: ['text']
+            },
+            {
+              '$ref': '#/components/schemas/CardContent'
+            }
+          ],
+          description: 'A step data item can be either plain text with zikr/zikrTr or a card with Arabic/transliteration/translation'
         },
         AudioResource: {
           type: 'object',
