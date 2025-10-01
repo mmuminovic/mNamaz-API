@@ -79,6 +79,37 @@ class LocalizationService {
     }
   }
 
+  private async replacePlaceholders(text: string, language: string): Promise<string> {
+    const allTranslations = await this.getAllTranslations(language);
+
+    // Replace {{key}} placeholders with their values
+    // This supports nested replacements (e.g., {{zikr}} -> allahu_ekber_wxyz -> ALLAHU AKBAR)
+    let result = text;
+    let maxIterations = 3; // Prevent infinite loops
+    let iteration = 0;
+
+    while (iteration < maxIterations && result.includes('{{')) {
+      const previousResult = result;
+
+      result = result.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        const value = allTranslations[key];
+        if (value !== undefined) {
+          return String(value);
+        }
+        return match;
+      });
+
+      // If no changes were made, break to avoid infinite loop
+      if (result === previousResult) {
+        break;
+      }
+
+      iteration++;
+    }
+
+    return result;
+  }
+
   async localizeContent(content: any, language: string): Promise<any> {
     if (!content) return content;
 
@@ -91,12 +122,16 @@ class LocalizationService {
 
       for (const [key, value] of Object.entries(content)) {
         if (key === 'localeKey' && typeof value === 'string') {
-          localized['text'] = await this.getTranslation(value, language);
+          const translation = await this.getTranslation(value, language);
+          localized['text'] = await this.replacePlaceholders(translation, language);
           localized[key] = value;
         } else if (key === 'localeDict' && typeof value === 'string') {
           const translations = await this.getTranslationsByPrefix(value, language);
           localized['translations'] = translations;
           localized[key] = value;
+        } else if (typeof value === 'string' && value.includes('{{')) {
+          // Handle string values with placeholders
+          localized[key] = await this.replacePlaceholders(value, language);
         } else {
           localized[key] = await this.localizeContent(value, language);
         }
@@ -105,11 +140,23 @@ class LocalizationService {
       return localized;
     }
 
+    if (typeof content === 'string' && content.includes('{{')) {
+      return this.replacePlaceholders(content, language);
+    }
+
     return content;
   }
 
   clearCache(): void {
     this.cache.clear();
+  }
+
+  /**
+   * Processes a text string and replaces all {{placeholder}} with their translation values
+   * Supports nested replacements (e.g., {{zikr}} -> allahu_ekber_wxyz -> ALLAHU AKBAR)
+   */
+  async processPlaceholders(text: string, language: string): Promise<string> {
+    return this.replacePlaceholders(text, language);
   }
 }
 
