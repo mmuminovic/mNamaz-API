@@ -26,6 +26,9 @@ async function processSpecialPrayerContent(content: any, language: string): Prom
         processed.description = await localizationService.getTranslation(value, language);
       } else if (key === 'titleLocaleKey' && typeof value === 'string') {
         processed.title = await localizationService.getTranslation(value, language);
+      } else if ((key === 'title' || key === 'description') && typeof value === 'string' && value.includes('_')) {
+        // If title or description contains underscores, it's likely a locale key
+        processed[key] = await localizationService.getTranslation(value, language);
       } else {
         processed[key] = await processSpecialPrayerContent(value, language);
       }

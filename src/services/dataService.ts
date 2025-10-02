@@ -298,28 +298,79 @@ class DataService {
 
   async getNonMandatoryPrayers(): Promise<any> {
     const filePath = path.join(config.paths.data, "namaz/nonMandatoryNamaz.ts");
-    
-    try {
-      // Try direct import first
-      const module = await import(filePath);
-      if (module.nonMandatoryNamaz) {
-        return module.nonMandatoryNamaz;
-      }
-    } catch (error) {
-      logger.warn("Could not import non-mandatory prayers directly, trying loadModule", error);
-    }
 
-    // Try loadModule approach
     try {
-      const module = await this.loadModule<any>(filePath);
-      if (module.nonMandatoryNamaz) {
-        return module.nonMandatoryNamaz;
-      }
-    } catch (error) {
-      logger.error("Failed to load non-mandatory prayers", error);
-    }
+      // Read the file content
+      const fileContent = await fs.readFile(filePath, "utf-8");
 
-    throw new Error("Failed to load non-mandatory prayers data");
+      // Load namazComponents separately
+      const componentsPath = path.join(config.paths.data, "namaz/namazComponents.ts");
+      const componentsContent = await fs.readFile(componentsPath, "utf-8");
+
+      // Replace require() calls with mock filenames in both files
+      const processContent = (content: string) =>
+        content.replace(/const\s+(\w+)\s*=\s*require\([^)]+\);/g, 'const $1 = "$1";');
+
+      const componentsCode = processContent(componentsContent)
+        .replace(/export\s+/g, '');
+
+      const mainCode = processContent(fileContent)
+        .replace(/import\s+{([^}]+)}\s+from\s+['"]\.\/namazComponents['"]/g, '')
+        .replace(/export\s+/g, '');
+
+      // Extract unique asset declarations from mainCode that aren't in componentsCode
+      const mainAssetMatches = mainCode.match(/^const\s+(\w+)\s*=\s*"[^"]+";/gm) || [];
+      const componentAssetMatches = componentsCode.match(/const\s+(\w+)\s*=\s*"[^"]+";/g) || [];
+
+      const componentAssetNames = new Set(
+        componentAssetMatches.map(line => line.match(/const\s+(\w+)/)?.[1]).filter(Boolean)
+      );
+
+      const uniqueMainAssets = mainAssetMatches.filter(line => {
+        const varName = line.match(/const\s+(\w+)/)?.[1];
+        return varName && !componentAssetNames.has(varName);
+      });
+
+      const assetsCode = uniqueMainAssets.join('\n');
+
+      // Extract all const declarations from nonMandatoryNamaz.ts
+      const bajramMatch = mainCode.match(/const bajramNamaz\s*=\s*(\[[\s\S]*?\]);/);
+      const dzenazaMatch = mainCode.match(/const dzenazaNamaz\s*=\s*(\[[\s\S]*?\]);/);
+      const istiharaMatch = mainCode.match(/const istiharaNamaz\s*=\s*(\[[\s\S]*?\]);/);
+      const duhaMatch = mainCode.match(/const duhaNamaz\s*=\s*(\[[\s\S]*?\]);/);
+
+      // Extract the nonMandatoryNamaz object
+      const objMatch = mainCode.match(/const nonMandatoryNamaz\s*=\s*({[\s\S]*?});/);
+
+      if (!bajramMatch || !dzenazaMatch || !istiharaMatch || !duhaMatch || !objMatch) {
+        throw new Error("Could not extract required prayer data from file");
+      }
+
+      // Build the evaluation code with all dependencies
+      const evalCode = `
+        ${componentsCode}
+        ${assetsCode}
+        const bajramNamaz = ${bajramMatch[1]};
+        const dzenazaNamaz = ${dzenazaMatch[1]};
+        const istiharaNamaz = ${istiharaMatch[1]};
+        const duhaNamaz = ${duhaMatch[1]};
+        return ${objMatch[1]};
+      `;
+
+      // Use Function constructor instead of eval for better scope control
+      const evalFunction = new Function(evalCode);
+      const result = evalFunction();
+
+      logger.info("Successfully loaded non-mandatory prayers via file parsing");
+      return result;
+
+    } catch (error) {
+      logger.error("Failed to load non-mandatory prayers", {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      throw new Error("Failed to load non-mandatory prayers data");
+    }
   }
 
   async getZikrData(): Promise<Dhikr[]> {
