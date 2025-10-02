@@ -307,9 +307,12 @@ class DataService {
       const componentsPath = path.join(config.paths.data, "namaz/namazComponents.ts");
       const componentsContent = await fs.readFile(componentsPath, "utf-8");
 
-      // Replace require() calls with mock filenames in both files
+      // Replace require() calls with actual file paths from both files
       const processContent = (content: string) =>
-        content.replace(/const\s+(\w+)\s*=\s*require\([^)]+\);/g, 'const $1 = "$1";');
+        content.replace(/const\s+(\w+)\s*=\s*require\(['"]([^'"]+)['"]\);/g, (_match, varName, filePath) => {
+          // Extract the actual file path from the require statement
+          return `const ${varName} = "${filePath}";`;
+        });
 
       const componentsCode = processContent(componentsContent)
         .replace(/export\s+/g, '');

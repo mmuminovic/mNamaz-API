@@ -17,15 +17,27 @@ export function createAssetUrl(relativePath: string): string {
   const cleanPath = relativePath.replace(/^\.+\/+/, '');
 
   // Determine the API path based on environment
-  const apiPath = config.env === 'production' 
-    ? `/${config.api.version}` 
+  const apiPath = config.env === 'production'
+    ? `/${config.api.version}`
     : `${config.api.prefix}/${config.api.version}`;
 
   // Create full URL based on the asset type - all through unified /media endpoint
   if (cleanPath.includes('audio/')) {
-    return `${config.baseUrl}${apiPath}/media/audio/${cleanPath.split('audio/')[1]}`;
+    // Extract filename from path like "data/namaz/audio/allahu-ekber.mp3" or "audio/allahu-ekber.mp3"
+    const audioFileName = cleanPath.split('audio/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/audio/${audioFileName}`;
+  } else if (cleanPath.includes('assets/namaz/prayer/')) {
+    // Extract filename from prayer image paths like "assets/namaz/prayer/takbir.png"
+    const imageFileName = cleanPath.split('assets/namaz/prayer/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/prayer/${imageFileName}`;
+  } else if (cleanPath.includes('assets/namaz/')) {
+    // Extract filename from general namaz asset paths like "assets/namaz/minber.png"
+    const imageFileName = cleanPath.split('assets/namaz/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/${imageFileName}`;
   } else if (cleanPath.includes('assets/')) {
-    return `${config.baseUrl}${apiPath}/media/images/${cleanPath.split('assets/')[1]}`;
+    // Extract filename from general asset paths
+    const imageFileName = cleanPath.split('assets/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/${imageFileName}`;
   } else if (cleanPath.endsWith('.mp3')) {
     // For audio files without path (like dhikr audio files) - use unified media endpoint
     return `${config.baseUrl}${apiPath}/media/audio/zikr/${cleanPath}`;
