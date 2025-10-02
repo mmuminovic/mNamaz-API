@@ -35,6 +35,11 @@ async function processLessonContent(lesson: any, language: string): Promise<any>
         processedSentence.text = sentence.text || '';
       }
 
+      // Preserve audio property if present
+      if (sentence.audio) {
+        processedSentence.audio = sentence.audio;
+      }
+
       return processedSentence;
     }));
   }
