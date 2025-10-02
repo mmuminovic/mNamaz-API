@@ -97,6 +97,16 @@ async function processSpecialPrayerContent(content: any, language: string): Prom
     for (const [key, value] of Object.entries(content)) {
       if (key === 'localeKey' && typeof value === 'string') {
         processed.text = await localizationService.getTranslation(value, language);
+      } else if (key === 'localeKeys' && Array.isArray(value)) {
+        // Handle localeKeys array - translate each locale key to text
+        processed.texts = await Promise.all(
+          value.map(async (localeKey: string) => {
+            if (localeKey && typeof localeKey === 'string' && localeKey.trim() !== '') {
+              return await localizationService.getTranslation(localeKey, language);
+            }
+            return ''; // Empty string for empty locale keys
+          })
+        );
       } else if (key === 'nameLocaleKey' && typeof value === 'string') {
         processed.name = await localizationService.getTranslation(value, language);
       } else if (key === 'descriptionLocaleKey' && typeof value === 'string') {
