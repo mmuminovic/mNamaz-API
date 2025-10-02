@@ -23,21 +23,21 @@ export function createAssetUrl(relativePath: string): string {
 
   // Create full URL based on the asset type - all through unified /media endpoint
   if (cleanPath.includes('audio/')) {
-    // Extract filename from path like "data/namaz/audio/allahu-ekber.mp3" or "audio/allahu-ekber.mp3"
+    // Extract filename from path like "data/namaz/audio/allahu-ekber.mp3" or "./audio/allahu-ekber.mp3"
     const audioFileName = cleanPath.split('audio/').pop() || cleanPath;
     return `${config.baseUrl}${apiPath}/media/audio/${audioFileName}`;
   } else if (cleanPath.includes('assets/namaz/prayer/')) {
-    // Extract filename from prayer image paths like "assets/namaz/prayer/takbir.png"
-    const imageFileName = cleanPath.split('assets/namaz/prayer/').pop() || cleanPath;
-    return `${config.baseUrl}${apiPath}/media/images/prayer/${imageFileName}`;
+    // Extract the path after "assets/" to preserve the namaz/prayer structure
+    const imagePath = cleanPath.split('assets/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/${imagePath}`;
   } else if (cleanPath.includes('assets/namaz/')) {
-    // Extract filename from general namaz asset paths like "assets/namaz/minber.png"
-    const imageFileName = cleanPath.split('assets/namaz/').pop() || cleanPath;
-    return `${config.baseUrl}${apiPath}/media/images/${imageFileName}`;
+    // Extract the path after "assets/" to preserve the namaz structure
+    const imagePath = cleanPath.split('assets/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/${imagePath}`;
   } else if (cleanPath.includes('assets/')) {
-    // Extract filename from general asset paths
-    const imageFileName = cleanPath.split('assets/').pop() || cleanPath;
-    return `${config.baseUrl}${apiPath}/media/images/${imageFileName}`;
+    // Extract the path after "assets/"
+    const imagePath = cleanPath.split('assets/').pop() || cleanPath;
+    return `${config.baseUrl}${apiPath}/media/images/${imagePath}`;
   } else if (cleanPath.endsWith('.mp3')) {
     // For audio files without path (like dhikr audio files) - use unified media endpoint
     return `${config.baseUrl}${apiPath}/media/audio/zikr/${cleanPath}`;
