@@ -373,5 +373,158 @@ export const audioMetadata: AudioMetadata[] = [
       transliteration: 'rabigfirli_wxyz',
       translation: 'rabigfirli_tr'
     }]
+  },
+  // Dhikr/Zikr audio files
+  {
+    id: 'estagfirullah-3x',
+    filename: 'estagfirullah-3x.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_1',
+      transliteration: 'zikr_posle_namaza_1_wxyz',
+      translation: 'zikr_posle_namaza_1_tr'
+    }]
+  },
+  {
+    id: 'allahumme-ente-sselam',
+    filename: 'allahumme-ente-sselam.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_2',
+      transliteration: 'zikr_posle_namaza_2_wxyz',
+      translation: 'zikr_posle_namaza_2_tr'
+    }]
+  },
+  {
+    id: 'ajetul-kursijj',
+    filename: 'ajetul-kursijj.mp3',
+    localeKeys: [{
+      arabic: 'ajetul_kursijj',
+      transliteration: 'ajetul_kursijj_wxyz',
+      translation: 'ajetul_kursijj_tr'
+    }]
+  },
+  {
+    id: 'subhanallah',
+    filename: 'subhanallah.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_5_1',
+      transliteration: 'zikr_posle_namaza_5_1_wxyz',
+      translation: 'zikr_posle_namaza_5_1_tr'
+    }]
+  },
+  {
+    id: 'elhamdulillah',
+    filename: 'elhamdulillah.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_5_2',
+      transliteration: 'zikr_posle_namaza_5_2_wxyz',
+      translation: 'zikr_posle_namaza_5_2_tr'
+    }]
+  },
+  {
+    id: 'lailaheillallah',
+    filename: 'lailaheillallah.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_6',
+      transliteration: 'zikr_posle_namaza_6_wxyz',
+      translation: 'zikr_posle_namaza_6_tr'
+    }]
+  },
+  {
+    id: 'allahumme-einni-ala-zikrike',
+    filename: 'allahumme-einni-ala-zikrike.mp3',
+    localeKeys: [{
+      arabic: 'zikr_posle_namaza_7',
+      transliteration: 'zikr_posle_namaza_7_wxyz',
+      translation: 'zikr_posle_namaza_7_tr'
+    }]
+  },
+  // Call to Prayer (Adhan/Azan) - Complete with all verses
+  {
+    id: 'azan',
+    filename: 'azan.mp3',
+    localeKeys: [
+      {
+        arabic: 'lekcija_8_4',
+        transliteration: 'lekcija_8_4_wxyz',
+        translation: 'lekcija_8_4_tr'
+      },
+      {
+        arabic: 'lekcija_8_5',
+        transliteration: 'lekcija_8_5_wxyz',
+        translation: 'lekcija_8_5_tr'
+      },
+      {
+        arabic: 'lekcija_8_6',
+        transliteration: 'lekcija_8_6_wxyz',
+        translation: 'lekcija_8_6_tr'
+      },
+      {
+        arabic: 'lekcija_8_7',
+        transliteration: 'lekcija_8_7_wxyz',
+        translation: 'lekcija_8_7_tr'
+      },
+      {
+        arabic: 'lekcija_8_8',
+        transliteration: 'lekcija_8_8_wxyz',
+        translation: 'lekcija_8_8_tr'
+      },
+      {
+        arabic: 'lekcija_8_9',
+        transliteration: 'lekcija_8_9_wxyz',
+        translation: 'lekcija_8_9_tr'
+      },
+      {
+        arabic: 'lekcija_8_10',
+        transliteration: 'lekcija_8_10_wxyz',
+        translation: 'lekcija_8_10_tr'
+      }
+    ]
+  },
+  // Second Call to Prayer (Iqamah/Ikamet)
+  {
+    id: 'iqamah',
+    filename: 'iqamah.mp3',
+    localeKeys: [
+      {
+        arabic: 'lekcija_8_4',
+        transliteration: 'lekcija_8_4_wxyz',
+        translation: 'lekcija_8_4_tr'
+      },
+      {
+        arabic: 'lekcija_8_5',
+        transliteration: 'lekcija_8_5_wxyz',
+        translation: 'lekcija_8_5_tr'
+      },
+      {
+        arabic: 'lekcija_8_6',
+        transliteration: 'lekcija_8_6_wxyz',
+        translation: 'lekcija_8_6_tr'
+      },
+      {
+        arabic: 'lekcija_8_7',
+        transliteration: 'lekcija_8_7_wxyz',
+        translation: 'lekcija_8_7_tr'
+      },
+      {
+        arabic: 'lekcija_8_14',
+        transliteration: 'lekcija_8_14_wxyz',
+        translation: 'lekcija_8_14_tr'
+      },
+      {
+        arabic: 'lekcija_8_8',
+        transliteration: 'lekcija_8_8_wxyz',
+        translation: 'lekcija_8_8_tr'
+      },
+      {
+        arabic: 'lekcija_8_9',
+        transliteration: 'lekcija_8_9_wxyz',
+        translation: 'lekcija_8_9_tr'
+      },
+      {
+        arabic: 'lekcija_8_10',
+        transliteration: 'lekcija_8_10_wxyz',
+        translation: 'lekcija_8_10_tr'
+      }
+    ]
   }
 ];
