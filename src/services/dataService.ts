@@ -58,10 +58,10 @@ class DataService {
 
       // Extract individual exports
       const namazDataHanefiMatch = content.match(
-        /const namazDataHanefi\s*=\s*(\[[\s\S]*?\]);/
+        /const namazDataHanefi\s*=\s*(\[[\s\S]*?\]);?/
       );
       const namazDataShafiMatch = content.match(
-        /const namazDataShafi\s*=\s*(\[[\s\S]*?\]);/
+        /const namazDataShafi\s*=\s*(\[[\s\S]*?\]);?/
       );
 
       // Parse the extracted data
