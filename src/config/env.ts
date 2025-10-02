@@ -43,7 +43,8 @@ const getMediaBaseUrl = (): string => {
   if (env.NODE_ENV === 'production') {
     return `https://api.mnamaz.com/${env.API_VERSION}/media`;
   }
-  return `http://localhost:${env.PORT}${env.API_PREFIX}/${env.API_VERSION}/media`;
+  const host = env.HOST === '0.0.0.0' ? 'localhost' : env.HOST;
+  return `http://${host}:${env.PORT}${env.API_PREFIX}/${env.API_VERSION}/media`;
 };
 
 export const config = {
