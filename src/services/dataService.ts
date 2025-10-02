@@ -183,6 +183,15 @@ class DataService {
         return { zikrAtTheEnd: zikrData };
       }
 
+      // Check for audioMetadata export
+      const audioMetadataMatch = content.match(
+        /export\s+const\s+audioMetadata:\s*AudioMetadata\[\]\s*=\s*(\[[\s\S]*?\]);/
+      );
+      if (audioMetadataMatch) {
+        const audioData = eval(`(${audioMetadataMatch[1]})`);
+        return { audioMetadata: audioData };
+      }
+
       // If specific format not found, try generic parsing
       const exportMatch = content.match(
         /export\s*(?:const|let|var)?\s*(?:{[^}]+}|\w+)\s*=\s*([\s\S]+)$/
@@ -249,21 +258,7 @@ class DataService {
   }> {
     const filePath = path.join(config.paths.data, "namaz/namazDetails.ts");
 
-    // Try direct import of the data first
-    try {
-      const { namazDataHanefi, namazDataShafi } = await import(filePath);
-
-      if (namazDataHanefi && namazDataShafi) {
-        return {
-          namazDataHanefi: namazDataHanefi,
-          namazDataShafi: namazDataShafi,
-        };
-      }
-    } catch (error) {
-      logger.error("Could not import namaz details directly, trying loadModule", error);
-    }
-
-    // Try to load the actual data from the file
+    // Load the actual data from the file using loadModule
     const module = await this.loadModule<any>(filePath);
 
     if (module.namazDataHanefi && module.namazDataShafi) {
@@ -412,7 +407,8 @@ class DataService {
     const filePath = path.join(config.paths.data, "namaz/audioMetadata.ts");
 
     try {
-      const module = await import(filePath);
+      // Use loadModule to handle both TS parsing and caching
+      const module = await this.loadModule<{ audioMetadata: any[] }>(filePath);
       return module.audioMetadata || [];
     } catch (error) {
       logger.error("Failed to load audio metadata", error);
