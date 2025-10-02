@@ -63,6 +63,11 @@ export interface AudioResource {
   path: string;
   category: 'prayer' | 'dhikr' | 'azan' | 'iqamah';
   school?: 'hanafi' | 'shafi';
+  localeKeys?: Array<{
+    arabic: string;
+    transliteration: string;
+    translation: string;
+  }>;
 }
 
 export interface ApiResponse<T> {

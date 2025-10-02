@@ -408,14 +408,30 @@ class DataService {
     return this.loadJsonFile<any>(filePath);
   }
 
+  async getAudioMetadata(): Promise<any[]> {
+    const filePath = path.join(config.paths.data, "namaz/audioMetadata.ts");
+
+    try {
+      const module = await import(filePath);
+      return module.audioMetadata || [];
+    } catch (error) {
+      logger.error("Failed to load audio metadata", error);
+      return [];
+    }
+  }
+
   async getAudioResources(): Promise<AudioResource[]> {
     const audioDir = config.paths.audio;
     const resources: AudioResource[] = [];
 
     try {
       const files = await this.getAudioFiles(audioDir);
+      const metadata = await this.getAudioMetadata();
 
       for (const file of files) {
+        const id = path.basename(file, ".mp3");
+        const meta = metadata.find((m: any) => m.id === id);
+
         const category = file.includes("zikr/")
           ? "dhikr"
           : file.includes("azan")
@@ -425,10 +441,12 @@ class DataService {
               : "prayer";
 
         resources.push({
-          id: path.basename(file, ".mp3"),
+          id,
           filename: path.basename(file),
           path: file,
           category,
+          school: meta?.school,
+          localeKeys: meta?.localeKeys,
         });
       }
 

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import dataService from '../services/dataService';
+import localizationService from '../services/localizationService';
 import { sendSuccess } from '../utils/responseFormatter';
 import { asyncHandler } from '../middleware/errorHandler';
 import { AppError } from '../middleware/errorHandler';
@@ -38,26 +39,44 @@ export const getAudioList = asyncHandler(async (req: Request, res: Response) => 
   const category = req.query.category as string;
   const language = req.language || 'en';
   const school = getSchoolByLanguage(language);
-  
+
   const audioResources = await dataService.getAudioResources();
-  
+
   let filtered = audioResources;
-  
+
   if (category) {
     filtered = filtered.filter(audio => audio.category === category);
   }
-  
+
   // Filter by school determined by language
   filtered = filtered.filter(audio => !audio.school || audio.school === school);
-  
-  const audioData = filtered.map(audio => ({
-    id: audio.id,
-    filename: audio.filename,
-    category: audio.category,
-    school: audio.school,
-    url: `${config.media.baseUrl}/audio/${audio.path}`,
+
+  // Resolve localization for each audio resource
+  const audioData = await Promise.all(filtered.map(async (audio) => {
+    const result: any = {
+      id: audio.id,
+      filename: audio.filename,
+      category: audio.category,
+      school: audio.school,
+      url: `${config.media.baseUrl}/audio/${audio.path}`,
+    };
+
+    // Add text, transliteration, and translation if localeKeys exist
+    if (audio.localeKeys && audio.localeKeys.length > 0) {
+      const sentences = await Promise.all(audio.localeKeys.map(async (keys) => ({
+        text: await localizationService.getTranslation(keys.arabic, language),
+        transliteration: await localizationService.getTranslation(keys.transliteration, language),
+        translation: await localizationService.getTranslation(keys.translation, language),
+      })));
+
+      result.text = sentences.map(s => s.text);
+      result.transliteration = sentences.map(s => s.transliteration);
+      result.translation = sentences.map(s => s.translation);
+    }
+
+    return result;
   }));
-  
+
   sendSuccess(res, audioData, 200, { language, school });
 });
 
@@ -92,23 +111,37 @@ export const getAudioList = asyncHandler(async (req: Request, res: Response) => 
  */
 export const getAudioById = asyncHandler(async (req: Request, res: Response) => {
   const { audioId } = req.params;
-  
+  const language = req.language || 'en';
+
   const audioResources = await dataService.getAudioResources();
   const audio = audioResources.find(a => a.id === audioId);
-  
+
   if (!audio) {
     throw new AppError('Audio resource not found', 404, 'AUDIO_NOT_FOUND');
   }
-  
-  const audioData = {
+
+  const audioData: any = {
     id: audio.id,
     filename: audio.filename,
     category: audio.category,
     school: audio.school,
     url: `${config.media.baseUrl}/audio/${audio.path}`,
   };
-  
-  sendSuccess(res, audioData);
+
+  // Add text, transliteration, and translation if localeKeys exist
+  if (audio.localeKeys && audio.localeKeys.length > 0) {
+    const sentences = await Promise.all(audio.localeKeys.map(async (keys) => ({
+      text: await localizationService.getTranslation(keys.arabic, language),
+      transliteration: await localizationService.getTranslation(keys.transliteration, language),
+      translation: await localizationService.getTranslation(keys.translation, language),
+    })));
+
+    audioData.text = sentences.map(s => s.text);
+    audioData.transliteration = sentences.map(s => s.transliteration);
+    audioData.translation = sentences.map(s => s.translation);
+  }
+
+  sendSuccess(res, audioData, 200, { language });
 });
 
 /**
