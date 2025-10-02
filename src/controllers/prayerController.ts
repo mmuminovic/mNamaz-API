@@ -101,18 +101,42 @@ async function processLocaleContent(
     }
 
     // Regular processing for non-card objects
+    // First pass: collect zikr values for placeholder replacement
+    const placeholderValues: Record<string, string> = {};
+
+    for (const [key, value] of Object.entries(content)) {
+      if (key === "zikr" && typeof value === "string") {
+        placeholderValues.zikr = await localizationService.getTranslation(value, language);
+      } else if (key === "zikrTr" && typeof value === "string") {
+        placeholderValues.zikrTr = await localizationService.getTranslation(value, language);
+      }
+    }
+
+    // Second pass: process all content with placeholder values
     for (const [key, value] of Object.entries(content)) {
       if (key === "localeKey" && typeof value === "string") {
-        const translation = await localizationService.getTranslation(
+        let translation = await localizationService.getTranslation(
           value,
           language
         );
-        // Process any placeholders in the translation
+
+        // Replace any placeholders with their values
+        for (const [placeholder, placeholderValue] of Object.entries(placeholderValues)) {
+          translation = translation.replace(new RegExp(`\\{\\{${placeholder}\\}\\}`, 'g'), placeholderValue);
+        }
+
+        // Process any remaining placeholders in the translation
         processed.text = await localizationService.processPlaceholders(translation, language);
       } else if (key === "localeKeys" && Array.isArray(value)) {
         processed.texts = await Promise.all(
           value.map(async (key) => {
-            const translation = await localizationService.getTranslation(key, language);
+            let translation = await localizationService.getTranslation(key, language);
+
+            // Replace any placeholders with their values
+            for (const [placeholder, placeholderValue] of Object.entries(placeholderValues)) {
+              translation = translation.replace(new RegExp(`\\{\\{${placeholder}\\}\\}`, 'g'), placeholderValue);
+            }
+
             return localizationService.processPlaceholders(translation, language);
           })
         );
@@ -122,11 +146,11 @@ async function processLocaleContent(
           language
         );
       } else if (key === "zikr" && typeof value === "string") {
-        // Resolve zikr reference to its actual translation
-        processed.zikr = await localizationService.getTranslation(value, language);
+        // Already processed in first pass, just add to output
+        processed.zikr = placeholderValues.zikr;
       } else if (key === "zikrTr" && typeof value === "string") {
-        // Resolve zikrTr reference to its actual translation
-        processed.zikrTr = await localizationService.getTranslation(value, language);
+        // Already processed in first pass, just add to output
+        processed.zikrTr = placeholderValues.zikrTr;
       } else {
         processed[key] = await processLocaleContent(value, language);
       }
