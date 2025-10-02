@@ -62,7 +62,65 @@ export function processAssetUrls(obj: any): any {
 
   if (typeof obj === 'object' && obj !== null) {
     const processed: any = {};
-    
+
+    // Special handling for card objects with arabic/translation/transliteration structure
+    if (obj.card === true) {
+      processed.card = true;
+
+      // Preserve title as-is (it's already processed text)
+      if (obj.title) {
+        processed.title = obj.title;
+      }
+
+      // Preserve arabic array structure (text, bold, borderTop properties)
+      if (Array.isArray(obj.arabic)) {
+        processed.arabic = obj.arabic.map((item: any) => {
+          if (typeof item === 'object' && item.text !== undefined) {
+            return {
+              text: item.text,
+              bold: item.bold,
+              ...(item.borderTop !== undefined && { borderTop: item.borderTop })
+            };
+          }
+          return item;
+        });
+      }
+
+      // Preserve transliteration array structure (text, bold properties)
+      if (Array.isArray(obj.transliteration)) {
+        processed.transliteration = obj.transliteration.map((item: any) => {
+          if (typeof item === 'object' && item.text !== undefined) {
+            return {
+              text: item.text,
+              bold: item.bold
+            };
+          }
+          return item;
+        });
+      }
+
+      // Preserve translation array structure (text, bold properties)
+      if (Array.isArray(obj.translation)) {
+        processed.translation = obj.translation.map((item: any) => {
+          if (typeof item === 'object' && item.text !== undefined) {
+            return {
+              text: item.text,
+              bold: item.bold
+            };
+          }
+          return item;
+        });
+      }
+
+      // Process audio field if present
+      if (obj.audio) {
+        processed.audio = typeof obj.audio === 'string' ? createAssetUrl(obj.audio) : obj.audio;
+      }
+
+      return processed;
+    }
+
+    // Regular processing for non-card objects
     for (const [key, value] of Object.entries(obj)) {
       // Check for common asset path properties
       if ((key === 'image' || key === 'images' || key === 'audio') && typeof value === 'string') {
@@ -83,7 +141,7 @@ export function processAssetUrls(obj: any): any {
         processed[key] = processAssetUrls(value);
       }
     }
-    
+
     return processed;
   }
 

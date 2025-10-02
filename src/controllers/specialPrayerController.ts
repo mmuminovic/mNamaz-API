@@ -17,6 +17,83 @@ async function processSpecialPrayerContent(content: any, language: string): Prom
   if (typeof content === 'object' && content !== null) {
     const processed: any = {};
 
+    // Special handling for card objects with arabic/translation structure
+    if (content.card === true && content.arabic && content.translation) {
+      processed.card = true;
+
+      // Process title - it should be the transliteration
+      if (content.title) {
+        processed.title = await localizationService.getTranslation(
+          content.title,
+          language
+        );
+      }
+
+      // Process arabic array - swap to get actual Arabic text
+      if (Array.isArray(content.arabic)) {
+        processed.arabic = await Promise.all(
+          content.arabic.map(async (item: any) => {
+            if (item.localeKey && typeof item.localeKey === 'string') {
+              // Remove _wxyz suffix to get the Arabic text key
+              const arabicKey = item.localeKey.replace(/_wxyz$/, '');
+              const arabicText = await localizationService.getTranslation(arabicKey, language);
+
+              return {
+                text: arabicText,
+                bold: item.bold,
+                borderTop: item.borderTop,
+              };
+            }
+            return item;
+          })
+        );
+      }
+
+      // Process translation array - swap to get transliteration
+      if (Array.isArray(content.translation)) {
+        processed.transliteration = await Promise.all(
+          content.translation.map(async (item: any) => {
+            if (item.localeKey && typeof item.localeKey === 'string') {
+              // Get the _wxyz version for transliteration
+              const transliterationKey = item.localeKey.replace(/_tr$/, '_wxyz');
+              const transliterationText = await localizationService.getTranslation(transliterationKey, language);
+
+              return {
+                text: transliterationText,
+                bold: item.bold,
+              };
+            }
+            return item;
+          })
+        );
+      }
+
+      // Process translation for meaning
+      if (Array.isArray(content.translation)) {
+        processed.translation = await Promise.all(
+          content.translation.map(async (item: any) => {
+            if (item.localeKey && typeof item.localeKey === 'string') {
+              const translationText = await localizationService.getTranslation(item.localeKey, language);
+
+              return {
+                text: translationText,
+                bold: item.bold,
+              };
+            }
+            return item;
+          })
+        );
+      }
+
+      // Process audio and other fields
+      if (content.audio) {
+        processed.audio = content.audio;
+      }
+
+      return processed;
+    }
+
+    // Regular processing for non-card objects
     for (const [key, value] of Object.entries(content)) {
       if (key === 'localeKey' && typeof value === 'string') {
         processed.text = await localizationService.getTranslation(value, language);
