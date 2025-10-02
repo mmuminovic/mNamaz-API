@@ -40,6 +40,16 @@ async function processLessonContent(lesson: any, language: string): Promise<any>
         processedSentence.audio = sentence.audio;
       }
 
+      // Extract bold styling from fontFamily
+      if (sentence.style?.fontFamily === 'DMSansBold') {
+        processedSentence.bold = true;
+      }
+
+      // Extract text alignment
+      if (sentence.style?.textAlign) {
+        processedSentence.align = sentence.style.textAlign;
+      }
+
       return processedSentence;
     }));
   }
