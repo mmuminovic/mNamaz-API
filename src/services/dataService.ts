@@ -56,18 +56,35 @@ class DataService {
         '"$1"'
       );
 
-      // Extract individual exports
-      const namazDataHanefiMatch = content.match(
-        /const namazDataHanefi\s*=\s*(\[[\s\S]*?\]);?/
-      );
-      const namazDataShafiMatch = content.match(
-        /const namazDataShafi\s*=\s*(\[[\s\S]*?\]);?/
-      );
+      // Extract individual exports using bracket counting for nested arrays
+      const extractArrayData = (content: string, variableName: string): string | null => {
+        const startPattern = new RegExp(`const ${variableName}\\s*=\\s*\\[`);
+        const match = content.match(startPattern);
+        if (!match) return null;
+
+        const startIndex = match.index! + match[0].length - 1; // Position of opening [
+        let bracketCount = 0;
+        let endIndex = startIndex;
+
+        for (let i = startIndex; i < content.length; i++) {
+          if (content[i] === '[') bracketCount++;
+          if (content[i] === ']') bracketCount--;
+          if (bracketCount === 0) {
+            endIndex = i;
+            break;
+          }
+        }
+
+        return content.substring(startIndex, endIndex + 1);
+      };
+
+      const hanefiArrayStr = extractArrayData(content, 'namazDataHanefi');
+      const shafiArrayStr = extractArrayData(content, 'namazDataShafi');
 
       // Parse the extracted data
-      if (namazDataHanefiMatch && namazDataShafiMatch) {
-        const hanefiData = eval(`(${namazDataHanefiMatch[1]})`);
-        const shafiData = eval(`(${namazDataShafiMatch[1]})`);
+      if (hanefiArrayStr && shafiArrayStr) {
+        const hanefiData = eval(`(${hanefiArrayStr})`);
+        const shafiData = eval(`(${shafiArrayStr})`);
 
         return {
           namazDataHanefi: hanefiData,
