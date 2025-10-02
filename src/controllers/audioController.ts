@@ -13,15 +13,14 @@ import { getSchoolByLanguage } from '../utils/schoolSelector';
  * @swagger
  * /audio:
  *   get:
- *     summary: Get all audio resources
- *     description: Retrieve list of available audio files with metadata and URLs. School is automatically determined based on language.
+ *     summary: Get all prayer audio resources
+ *     description: Retrieve list of available prayer audio files with text, transliteration, and translation. School is automatically determined based on language.
  *     tags: [Audio]
  *     parameters:
- *       - $ref: '#/components/parameters/CategoryParam'
  *       - $ref: '#/components/parameters/LanguageParam'
  *     responses:
  *       200:
- *         description: List of audio resources
+ *         description: List of prayer audio resources
  *         content:
  *           application/json:
  *             schema:
@@ -36,27 +35,19 @@ import { getSchoolByLanguage } from '../utils/schoolSelector';
  */
 
 export const getAudioList = asyncHandler(async (req: Request, res: Response) => {
-  const category = req.query.category as string;
   const language = req.language || 'en';
   const school = getSchoolByLanguage(language);
 
   const audioResources = await dataService.getAudioResources();
 
-  let filtered = audioResources;
-
-  if (category) {
-    filtered = filtered.filter(audio => audio.category === category);
-  }
-
   // Filter by school determined by language
-  filtered = filtered.filter(audio => !audio.school || audio.school === school);
+  const filtered = audioResources.filter(audio => !audio.school || audio.school === school);
 
   // Resolve localization for each audio resource
   const audioData = await Promise.all(filtered.map(async (audio) => {
     const result: any = {
       id: audio.id,
       filename: audio.filename,
-      category: audio.category,
       school: audio.school,
       url: `${config.media.baseUrl}/audio/${audio.path}`,
     };
@@ -123,7 +114,6 @@ export const getAudioById = asyncHandler(async (req: Request, res: Response) => 
   const audioData: any = {
     id: audio.id,
     filename: audio.filename,
-    category: audio.category,
     school: audio.school,
     url: `${config.media.baseUrl}/audio/${audio.path}`,
   };

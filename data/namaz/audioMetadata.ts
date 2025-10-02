@@ -2,11 +2,9 @@
  * Audio metadata mapping that connects audio files to their localization keys
  * This provides text (Arabic), transliteration (wxyz), and translation (tr) for each audio file
  */
-
 export interface AudioMetadata {
   id: string;
   filename: string;
-  category: 'prayer' | 'azan' | 'iqamah' | 'dhikr';
   school?: 'hanafi' | 'shafi';
   localeKeys: Array<{
     arabic: string;           // Key for Arabic text
@@ -14,13 +12,11 @@ export interface AudioMetadata {
     translation: string;      // Key for translation (tr)
   }>;
 }
-
 export const audioMetadata: AudioMetadata[] = [
   // Common prayers (both schools)
   {
     id: 'allahu-ekber',
     filename: 'allahu-ekber.mp3',
-    category: 'prayer',
     localeKeys: [{
       arabic: 'allahu_ekber',
       transliteration: 'allahu_ekber_wxyz',
@@ -30,7 +26,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'euza',
     filename: 'euza.mp3',
-    category: 'prayer',
     localeKeys: [{
       arabic: 'euza',
       transliteration: 'euza_wxyz',
@@ -40,7 +35,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'fatiha',
     filename: 'fatiha.mp3',
-    category: 'prayer',
     localeKeys: [
       {
         arabic: 'fatiha_1',
@@ -82,7 +76,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'ihlas',
     filename: 'ihlas.mp3',
-    category: 'prayer',
     localeKeys: [
       {
         arabic: 'ihlas_1',
@@ -109,7 +102,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'kevser',
     filename: 'kevser.mp3',
-    category: 'prayer',
     localeKeys: [
       {
         arabic: 'kevser_1',
@@ -131,7 +123,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'subhaneke',
     filename: 'subhaneke.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [
       {
@@ -159,7 +150,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'ettehijjatu',
     filename: 'ettehijjatu.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [
       {
@@ -192,7 +182,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'salavati',
     filename: 'salavati.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [
       {
@@ -220,7 +209,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'subhane-rabijel-azim',
     filename: 'subhane-rabijel-azim.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [{
       arabic: 'subhane_rabijel_azim',
@@ -231,7 +219,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'subhane-rabijel-eala',
     filename: 'subhane-rabijel-eala.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [{
       arabic: 'subhane_rabijel_eala',
@@ -242,7 +229,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'semiallahu-limen-hamideh',
     filename: 'semiallahu-limen-hamideh.mp3',
-    category: 'prayer',
     localeKeys: [{
       arabic: 'semiallahu_limen_hamideh',
       transliteration: 'semiallahu_limen_hamideh_wxyz',
@@ -252,7 +238,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'rabbena-ve-lekel-hamd',
     filename: 'rabbena-ve-lekel-hamd.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [{
       arabic: 'rabbena_lekel_hamd',
@@ -263,7 +248,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'rabbigfirli',
     filename: 'rabbigfirli.mp3',
-    category: 'prayer',
     school: 'hanafi',
     localeKeys: [{
       arabic: 'rabigfirli',
@@ -274,7 +258,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'esselamu-alejkum-ve-rahmetullah',
     filename: 'esselamu-alejkum-ve-rahmetullah.mp3',
-    category: 'prayer',
     localeKeys: [{
       arabic: 'esselamu_alejkum_ve_rahmetullah',
       transliteration: 'esselamu_alejkum_ve_rahmetullah_wxyz',
@@ -285,7 +268,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'allahu-ekberu-kebira',
     filename: 'allahu-ekberu-kebira.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [{
       arabic: 'pocetna_dova_1',
@@ -296,7 +278,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'ettehijjatu-shafi',
     filename: 'ettehijjatu-shafi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [
       {
@@ -329,7 +310,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'salavati-shafi',
     filename: 'salavati-shafi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [
       {
@@ -357,7 +337,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'subhane-rabijel-azim-ve-bi-hamdihi',
     filename: 'subhane-rabijel-azim-ve-bi-hamdihi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [{
       arabic: 'subhane_rabijel_azim',
@@ -368,7 +347,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'subhane-rabijel-eala-ve-bi-hamdihi',
     filename: 'subhane-rabijel-eala-ve-bi-hamdihi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [{
       arabic: 'subhane_rabijel_eala',
@@ -379,7 +357,6 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'nakon-povratka-sa-rukua-shafi',
     filename: 'nakon-povratka-sa-rukua-shafi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [{
       arabic: 'rabbena_lekel_hamd',
@@ -390,33 +367,11 @@ export const audioMetadata: AudioMetadata[] = [
   {
     id: 'izmedju-dvije-sedzde-shafi',
     filename: 'izmedju-dvije-sedzde-shafi.mp3',
-    category: 'prayer',
     school: 'shafi',
     localeKeys: [{
       arabic: 'rabigfirli',
       transliteration: 'rabigfirli_wxyz',
       translation: 'rabigfirli_tr'
-    }]
-  },
-  // Azan and Iqamah
-  {
-    id: 'azan',
-    filename: 'azan.mp3',
-    category: 'azan',
-    localeKeys: [{
-      arabic: 'azan',
-      transliteration: 'azan_wxyz',
-      translation: 'azan_tr'
-    }]
-  },
-  {
-    id: 'iqamah',
-    filename: 'iqamah.mp3',
-    category: 'iqamah',
-    localeKeys: [{
-      arabic: 'iqamah',
-      transliteration: 'iqamah_wxyz',
-      translation: 'iqamah_tr'
     }]
   }
 ];

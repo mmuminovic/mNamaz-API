@@ -432,19 +432,10 @@ class DataService {
         const id = path.basename(file, ".mp3");
         const meta = metadata.find((m: any) => m.id === id);
 
-        const category = file.includes("zikr/")
-          ? "dhikr"
-          : file.includes("azan")
-            ? "azan"
-            : file.includes("iqamah")
-              ? "iqamah"
-              : "prayer";
-
         resources.push({
           id,
           filename: path.basename(file),
           path: file,
-          category,
           school: meta?.school,
           localeKeys: meta?.localeKeys,
         });

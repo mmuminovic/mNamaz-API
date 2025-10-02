@@ -61,7 +61,6 @@ export interface AudioResource {
   id: string;
   filename: string;
   path: string;
-  category: 'prayer' | 'dhikr' | 'azan' | 'iqamah';
   school?: 'hanafi' | 'shafi';
   localeKeys?: Array<{
     arabic: string;
