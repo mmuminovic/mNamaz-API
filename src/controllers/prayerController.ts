@@ -40,10 +40,13 @@ async function processLocaleContent(
       if (Array.isArray(content.arabic)) {
         processed.arabic = await Promise.all(
           content.arabic.map(async (item: any) => {
-            if (item.localeKey && typeof item.localeKey === 'string') {
+            if (item.localeKey && typeof item.localeKey === "string") {
               // Remove _wxyz suffix to get the Arabic text key
-              const arabicKey = item.localeKey.replace(/_wxyz$/, '');
-              const arabicText = await localizationService.getTranslation(arabicKey, language);
+              const arabicKey = item.localeKey.replace(/_wxyz$/, "");
+              const arabicText = await localizationService.getTranslation(
+                arabicKey,
+                language
+              );
 
               return {
                 text: arabicText,
@@ -60,10 +63,17 @@ async function processLocaleContent(
       if (Array.isArray(content.translation)) {
         processed.transliteration = await Promise.all(
           content.translation.map(async (item: any) => {
-            if (item.localeKey && typeof item.localeKey === 'string') {
+            if (item.localeKey && typeof item.localeKey === "string") {
               // Get the _wxyz version for transliteration
-              const transliterationKey = item.localeKey.replace(/_tr$/, '_wxyz');
-              const transliterationText = await localizationService.getTranslation(transliterationKey, language);
+              const transliterationKey = item.localeKey.replace(
+                /_tr$/,
+                "_wxyz"
+              );
+              const transliterationText =
+                await localizationService.getTranslation(
+                  transliterationKey,
+                  language
+                );
 
               return {
                 text: transliterationText,
@@ -79,8 +89,11 @@ async function processLocaleContent(
       if (Array.isArray(content.translation)) {
         processed.translation = await Promise.all(
           content.translation.map(async (item: any) => {
-            if (item.localeKey && typeof item.localeKey === 'string') {
-              const translationText = await localizationService.getTranslation(item.localeKey, language);
+            if (item.localeKey && typeof item.localeKey === "string") {
+              const translationText = await localizationService.getTranslation(
+                item.localeKey,
+                language
+              );
 
               return {
                 text: translationText,
@@ -101,43 +114,28 @@ async function processLocaleContent(
     }
 
     // Regular processing for non-card objects
-    // First pass: collect zikr values for placeholder replacement
-    const placeholderValues: Record<string, string> = {};
-
-    for (const [key, value] of Object.entries(content)) {
-      if (key === "zikr" && typeof value === "string") {
-        placeholderValues.zikr = await localizationService.getTranslation(value, language);
-      } else if (key === "zikrTr" && typeof value === "string") {
-        placeholderValues.zikrTr = await localizationService.getTranslation(value, language);
-      }
-    }
-
-    // Second pass: process all content with placeholder values
     for (const [key, value] of Object.entries(content)) {
       if (key === "localeKey" && typeof value === "string") {
-        let translation = await localizationService.getTranslation(
+        const translation = await localizationService.getTranslation(
           value,
           language
         );
-
-        // Replace any placeholders with their values
-        for (const [placeholder, placeholderValue] of Object.entries(placeholderValues)) {
-          translation = translation.replace(new RegExp(`\\{\\{${placeholder}\\}\\}`, 'g'), placeholderValue);
-        }
-
-        // Process any remaining placeholders in the translation
-        processed.text = await localizationService.processPlaceholders(translation, language);
+        // Process any placeholders in the translation
+        processed.text = await localizationService.processPlaceholders(
+          translation,
+          language
+        );
       } else if (key === "localeKeys" && Array.isArray(value)) {
         processed.texts = await Promise.all(
           value.map(async (key) => {
-            let translation = await localizationService.getTranslation(key, language);
-
-            // Replace any placeholders with their values
-            for (const [placeholder, placeholderValue] of Object.entries(placeholderValues)) {
-              translation = translation.replace(new RegExp(`\\{\\{${placeholder}\\}\\}`, 'g'), placeholderValue);
-            }
-
-            return localizationService.processPlaceholders(translation, language);
+            const translation = await localizationService.getTranslation(
+              key,
+              language
+            );
+            return localizationService.processPlaceholders(
+              translation,
+              language
+            );
           })
         );
       } else if (key === "title" && typeof value === "string") {
@@ -146,11 +144,17 @@ async function processLocaleContent(
           language
         );
       } else if (key === "zikr" && typeof value === "string") {
-        // Already processed in first pass, just add to output
-        processed.zikr = placeholderValues.zikr;
+        // Resolve zikr reference to its actual translation
+        processed.zikr = await localizationService.getTranslation(
+          value,
+          language
+        );
       } else if (key === "zikrTr" && typeof value === "string") {
-        // Already processed in first pass, just add to output
-        processed.zikrTr = placeholderValues.zikrTr;
+        // Resolve zikrTr reference to its actual translation
+        processed.zikrTr = await localizationService.getTranslation(
+          value,
+          language
+        );
       } else {
         processed[key] = await processLocaleContent(value, language);
       }
@@ -193,14 +197,14 @@ export const getPrayers = asyncHandler(async (req: Request, res: Response) => {
         prayer.name,
         language
       );
-      
+
       // Map local names to prayer types
       const prayerTypeMap: Record<string, string> = {
-        'sabah': 'fajr',
-        'podne': 'dhuhr',
-        'ikindija': 'asr',
-        'aksam': 'maghrib',
-        'jacija': 'isha'
+        sabah: "fajr",
+        podne: "dhuhr",
+        ikindija: "asr",
+        aksam: "maghrib",
+        jacija: "isha",
       };
 
       return {
@@ -256,31 +260,45 @@ export const getPrayerByRekatNumber = asyncHandler(
     const school = getSchoolByLanguage(language);
 
     const rakats = parseInt(rekatNumber);
-    
+
     // Validate rekat number
     if (![2, 3, 4].includes(rakats)) {
-      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
+      throw new AppError(
+        "Invalid rekat number. Must be 2, 3, or 4",
+        400,
+        "INVALID_REKAT_NUMBER"
+      );
     }
 
     // Use data service to get prayer data
     const namazDetails = await dataService.getNamezDetails();
-    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
-    
+    const prayerData =
+      school === "shafi"
+        ? namazDetails.namazDataShafi
+        : namazDetails.namazDataHanefi;
+
     // Find the prayer data by number of rakats
     const prayer = prayerData.find((p: any) => p.num === rakats);
 
     if (!prayer) {
-      throw new AppError("Prayer configuration not found", 404, "PRAYER_CONFIG_NOT_FOUND");
+      throw new AppError(
+        "Prayer configuration not found",
+        404,
+        "PRAYER_CONFIG_NOT_FOUND"
+      );
     }
 
     // Create the response with the correct structure
     const prayerResponse = {
       rakats: rakats,
-      steps: prayer.steps || []
+      steps: prayer.steps || [],
     };
 
-    const processedPrayer = await processLocaleContent(prayerResponse, language);
-    
+    const processedPrayer = await processLocaleContent(
+      prayerResponse,
+      language
+    );
+
     // Convert asset paths to full URLs
     const prayerWithUrls = processAssetUrls(processedPrayer);
 
@@ -321,19 +339,24 @@ export const getPrayerSteps = asyncHandler(
     const school = getSchoolByLanguage(language);
 
     const rakats = parseInt(rekatNumber);
-    
+
     // Validate rekat number
     if (![2, 3, 4].includes(rakats)) {
-      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
+      throw new AppError(
+        "Invalid rekat number. Must be 2, 3, or 4",
+        400,
+        "INVALID_REKAT_NUMBER"
+      );
     }
 
     // Use data service to get prayer data
     const namazDetails = await dataService.getNamezDetails();
-    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
+    const prayerData =
+      school === "shafi"
+        ? namazDetails.namazDataShafi
+        : namazDetails.namazDataHanefi;
 
-    const prayer = prayerData.find(
-      (p: any) => p.num === rakats
-    );
+    const prayer = prayerData.find((p: any) => p.num === rakats);
 
     if (!prayer) {
       throw new AppError(
@@ -345,7 +368,7 @@ export const getPrayerSteps = asyncHandler(
 
     // Use the actual steps from the prayer data
     const processedSteps = await processLocaleContent(prayer.steps, language);
-    
+
     // Convert asset paths to full URLs
     const stepsWithUrls = processAssetUrls(processedSteps);
 
@@ -406,16 +429,21 @@ export const getPrayerStep = asyncHandler(
 
     // Validate rekat number
     if (![2, 3, 4].includes(rakats)) {
-      throw new AppError("Invalid rekat number. Must be 2, 3, or 4", 400, "INVALID_REKAT_NUMBER");
+      throw new AppError(
+        "Invalid rekat number. Must be 2, 3, or 4",
+        400,
+        "INVALID_REKAT_NUMBER"
+      );
     }
 
     // Use data service to get prayer data
     const namazDetails = await dataService.getNamezDetails();
-    const prayerData = school === "shafi" ? namazDetails.namazDataShafi : namazDetails.namazDataHanefi;
+    const prayerData =
+      school === "shafi"
+        ? namazDetails.namazDataShafi
+        : namazDetails.namazDataHanefi;
 
-    const prayer = prayerData.find(
-      (p: any) => p.num === rakats
-    );
+    const prayer = prayerData.find((p: any) => p.num === rakats);
 
     if (!prayer) {
       throw new AppError(
@@ -433,7 +461,7 @@ export const getPrayerStep = asyncHandler(
     }
 
     const processedStep = await processLocaleContent(step, language);
-    
+
     // Convert asset paths to full URLs
     const stepWithUrls = processAssetUrls(processedStep);
 

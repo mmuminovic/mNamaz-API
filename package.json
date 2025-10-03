@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "npm run compile:data && tsc",
+    "compile:data": "tsc data/namaz/namazComponents.ts data/namaz/namazDetails.ts --outDir data/namaz/compiled --module commonjs --target es2022 --esModuleInterop --skipLibCheck",
     "start": "node dist/server.js",
     "start:prod": "NODE_ENV=production node dist/server.js",
     "lint": "eslint src/**/*.ts",

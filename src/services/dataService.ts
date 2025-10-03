@@ -273,19 +273,28 @@ class DataService {
     namazDataHanefi: any[];
     namazDataShafi: any[];
   }> {
-    const filePath = path.join(config.paths.data, "namaz/namazDetails.ts");
+    try {
+      // Use compiled JS files - these must be pre-compiled during build
+      // Compile command: npx tsc data/namaz/namazComponents.ts data/namaz/namazDetails.ts --outDir data/namaz/compiled --module commonjs --target es2022 --esModuleInterop true --skipLibCheck true
+      const compiledPath = path.join(config.paths.data, "namaz/compiled/namazDetails.js");
 
-    // Load the actual data from the file using loadModule
-    const module = await this.loadModule<any>(filePath);
+      // Clear require cache to get fresh data
+      delete require.cache[require.resolve(compiledPath)];
 
-    if (module.namazDataHanefi && module.namazDataShafi) {
-      return {
-        namazDataHanefi: module.namazDataHanefi,
-        namazDataShafi: module.namazDataShafi,
-      };
+      const module = require(compiledPath);
+
+      if (module.namazDataHanefi && module.namazDataShafi) {
+        return {
+          namazDataHanefi: module.namazDataHanefi,
+          namazDataShafi: module.namazDataShafi,
+        };
+      }
+
+      throw new Error("Failed to load namaz details data - missing exports");
+    } catch (error) {
+      logger.error("Error in getNamezDetails", error);
+      throw new Error("Failed to load namaz details data");
     }
-
-    throw new Error("Failed to load namaz details data");
   }
 
   async getLessons(): Promise<Lesson[]> {
